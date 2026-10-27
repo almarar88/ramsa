@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>رمسة — منصة الصوت العربي بلهجتك</title>
+<meta name="description" content="رمسة: حوّل النص إلى صوت باللهجة الإماراتية والسعودية والكويتية والمصرية، فرّغ الصوت إلى نص، نقِّ التسجيلات، وكلّم وكيلًا صوتيًا يفهم لهجتك.">
+<meta name="theme-color" content="#0d5c57" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1416" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="رمسة">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#home" aria-label="رمسة"><img src="icons/logo.svg" alt=""><span>رمسة</span></a>
+  <nav class="topnav" id="topnav"></nav>
+</header>
+
+<main id="app">
+
+<!-- HOME -->
+<section class="view" id="v-home">
+  <div class="hero">
+    <div class="eyebrow"><span class="dot"></span>منصة الصوت العربي · صُنعت في الإمارات</div>
+    <h1>نفهم <em>رمستك</em>،<br>ونرد عليك بلهجتك.</h1>
+    <p class="lead">نطق طبيعي بالإماراتي والسعودي والكويتي والمصري والإنجليزي، تفريغ صوتي يعرف لهجتك، تنقية للتسجيلات، ووكيل صوتي اسمه «رفيج» تكلّمه ويرد عليك ويخلّص طلبك.</p>
+    <div class="cta"><a class="btn primary lg" href="#agent">كلّم رفيج الحين</a><a class="btn ghost lg" href="#tts">جرّب تحويل النص إلى صوت</a></div>
+    <div class="hero-demo card glass">
+      <button class="play-round" id="heroPlay" aria-label="تشغيل"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      <div class="hd-body">
+        <div class="hd-meta"><span class="chip sm">حمدان · إماراتي</span><span class="muted">مثال مُولَّد بالمنصة</span></div>
+        <p class="hd-text">هلا والله وغلا! <span class="tag">[chuckle]</span> هذي رمسة، تسمع كلامك وترد عليك بلهجتك. جرّبها الحين، وبتشوف الفرق بنفسك.</p>
+        <canvas class="wave" id="heroWave" height="40"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="section-title"><h2>أربع أدوات. مكان واحد.</h2><p>بدون حساب، مجانًا للتجربة.</p></div>
+  <div class="features">
+    <a class="feature card" href="#agent"><div class="ficon f-agent"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-3.1A7 7 0 0 1 5 11z"/></svg></div><h3>رفيج · الوكيل الصوتي</h3><p>كلّمه بالمايك، يفهم لهجتك، يرد بصوت، ويعرض لك النص والنية والإجراء لحظة بلحظة.</p><span class="go">افتح ←</span></a>
+    <a class="feature card" href="#tts"><div class="ficon f-tts"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg></div><h3>النص إلى صوت</h3><p>اكتب، اختر اللهجة والصوت، أضف تشكيل تلقائي ووسوم تعبيرية مثل [chuckle]، ونزّل WAV.</p><span class="go">افتح ←</span></a>
+    <a class="feature card" href="#stt"><div class="ficon f-stt"><svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 4h10v2H4zm0 4h16v2H4zm0 4h10v2H4z"/></svg></div><h3>الصوت إلى نص</h3><p>تفريغ مباشر من المايك أو من ملف، بلهجة المتكلم كما هي، مع كشف اللهجة وترجمة إنجليزية.</p><span class="go">افتح ←</span></a>
+    <a class="feature card" href="#clean"><div class="ficon f-clean"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4v2h-3l-3 3-1.6-4L10 22 7 10l-1 2H3z"/></svg></div><h3>تنقية الصوت</h3><p>إزالة الضوضاء من تسجيلاتك على جهازك مباشرة بتقنية RNNoise، بدون رفع الملف لأي خادم.</p><span class="go">افتح ←</span></a>
+  </div>
+  <div class="section-title"><h2>مكتبة الأصوات</h2><p>اسمع، احفظ المفضل، واستخدمه بضغطة.</p></div>
+  <div class="voice-strip" id="homeVoices"></div>
+  <div class="card privacy">
+    <h3>بصراحة، كيف تشتغل؟</h3>
+    <ul>
+      <li>النطق والتفريغ والوكيل تعتمد على نماذج Google Gemini عبر خادم وسيط آمن؛ مفتاح الخدمة ما ينكشف في المتصفح.</li>
+      <li>تنقية الصوت تتم بالكامل على جهازك، والملف ما يطلع منه.</li>
+      <li>الإجراءات في رفيج (تغيير موعد، إشعار…) تجريبية على طلب وهمي، وقاعدة المعرفة تقدر تعدّلها بنفسك.</li>
+      <li>النسخة المجانية لها حد للطلبات؛ إذا وصلت الحد بنبلغك وتقدر تعيد بعد لحظات.</li>
+    </ul>
+  </div>
+  <footer class="foot">رمسة · نسخة تجريبية · <span id="year"></span></footer>
+</section>
+
+<!-- TTS -->
+<section class="view" id="v-tts" hidden>
+  <div class="page-head"><h1>النص إلى صوت</h1><p>اكتب بلهجتك، واختر من يقرأ.</p></div>
+  <div class="grid-2">
+    <div class="card pad">
+      <div class="seg" id="ttsDialect" role="tablist"></div>
+      <div class="ta-wrap">
+        <textarea id="ttsText" dir="auto" maxlength="1500" placeholder="اكتب النص هنا…"></textarea>
+        <div class="ta-foot"><span id="ttsCount" class="muted">0 / 1500</span><button class="btn sm soft" id="btnClear">مسح</button></div>
+      </div>
+      <div class="tags" id="ttsTags"></div>
+      <div class="row wrap gap">
+        <button class="btn soft" id="btnTashkeel"><b class="harakah">بَ</b> تشكيل تلقائي</button>
+        <label class="field"><span>الأسلوب</span><select id="ttsStyle"><option value="warm">ودّي</option><option value="calm">هادئ</option><option value="formal">رسمي</option><option value="excited">حماسي</option><option value="ad">إعلاني</option><option value="story">قصصي</option></select></label>
+        <label class="field"><span>السرعة</span><select id="ttsPace"><option value="slow">أبطأ</option><option value="normal" selected>عادية</option><option value="fast">أسرع</option></select></label>
+      </div>
+      <button class="btn primary block lg" id="btnGen"><span class="btxt">ولّد الصوت</span><span class="spin"></span></button>
+    </div>
+    <div class="col">
+      <div class="card pad">
+        <div class="row between"><h3 class="h3">الصوت</h3><a href="#voices" class="link">كل الأصوات</a></div>
+        <div class="voice-pick" id="ttsVoices"></div>
+      </div>
+      <div class="card pad">
+        <h3 class="h3">التسجيلات</h3>
+        <div id="ttsOut" class="outs"><div class="empty">بيظهر هنا الصوت اللي تولّده، وتقدر تسمعه وتنزّله WAV.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VOICES -->
+<section class="view" id="v-voices" hidden>
+  <div class="page-head"><h1>مكتبة الأصوات</h1><p>أصوات من لهجات مختلفة. اسمع العيّنة، احفظ مفضلاتك، واستخدمها مباشرة.</p></div>
+  <div class="chips" id="voiceFilter"></div>
+  <div class="voice-grid" id="voiceGrid"></div>
+</section>
+
+<!-- STT -->
+<section class="view" id="v-stt" hidden>
+  <div class="page-head"><h1>الصوت إلى نص</h1><p>تكلّم أو ارفع ملفًا، ونكتبه لك بلهجتك كما هي.</p></div>
+  <div class="grid-2">
+    <div class="col">
+      <div class="card pad center-col">
+        <div class="seg" id="sttMode"><button data-v="mic" class="on">المايك</button><button data-v="file">ملف</button></div>
+        <div id="sttMic" class="center-col">
+          <button class="mic-btn" id="sttRec" aria-label="ابدأ التسجيل"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-3.1A7 7 0 0 1 5 11z"/></svg></button>
+          <div class="meter"><canvas id="sttMeter" height="36"></canvas></div>
+          <p class="muted" id="sttStatus">اضغط وابدأ الكلام. نكتب كلامك أول بأول كل بضع ثوانٍ.</p>
+        </div>
+        <div id="sttFile" class="center-col" hidden>
+          <label class="drop" id="sttDrop"><input type="file" id="sttInput" accept="audio/*,video/*,.m4a,.mp3,.wav,.ogg,.aac,.flac,.mp4,.webm" hidden><svg viewBox="0 0 24 24"><path d="M12 3l5 5h-3v6h-4V8H7zm-7 14h14v4H5z"/></svg><b>اختر ملفًا صوتيًا</b><span class="muted">أو اسحبه هنا · حتى 10 دقائق</span></label>
+          <p class="muted" id="sttFileStatus"></p>
+        </div>
+        <label class="field wide"><span>اللهجة المتوقعة</span><select id="sttHint"><option value="auto">كشف تلقائي</option><option value="emirati">إماراتي</option><option value="saudi">سعودي</option><option value="kuwaiti">كويتي</option><option value="egyptian">مصري</option><option value="msa">فصحى</option><option value="english">English</option></select></label>
+      </div>
+      <div class="card pad" id="sttDialectCard" hidden>
+        <h3 class="h3">اللهجة المكتشفة</h3>
+        <div class="dialect-big"><span id="sttDialect">—</span><div class="conf"><div class="bar"><i id="sttConfBar"></i></div><span id="sttConf" class="muted"></span></div></div>
+        <div class="chips" id="sttCues"></div>
+      </div>
+    </div>
+    <div class="card pad transcript-card">
+      <div class="row between"><h3 class="h3">النص</h3>
+        <div class="row gap-s"><button class="btn sm soft" id="sttTrToggle">English</button><button class="btn sm soft" id="sttCopy">نسخ</button><button class="btn sm soft" id="sttDl">تنزيل</button><button class="btn sm soft" id="sttReset">مسح</button></div></div>
+      <div id="sttOut" class="transcript" dir="auto"><div class="empty">النص بيظهر هنا.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLEAN -->
+<section class="view" id="v-clean" hidden>
+  <div class="page-head"><h1>تنقية الصوت</h1><p>نشيل الضوضاء والوشوشة من تسجيلك، على جهازك بالكامل.</p></div>
+  <div class="grid-2">
+    <div class="card pad center-col">
+      <label class="drop" id="clDrop"><input type="file" id="clInput" accept="audio/*,video/*,.m4a,.mp3,.wav,.ogg,.aac,.flac,.mp4,.webm" hidden><svg viewBox="0 0 24 24"><path d="M12 3l5 5h-3v6h-4V8H7zm-7 14h14v4H5z"/></svg><b>اختر تسجيلًا</b><span class="muted">أو اسحبه هنا · حتى 10 دقائق</span></label>
+      <div class="or"><span>أو</span></div>
+      <button class="btn soft" id="clRec"><span class="rec-dot"></span><span class="btxt">سجّل من المايك</span></button>
+      <label class="field wide"><span>قوة التنقية <b id="clStrV">قوية</b></span><input type="range" id="clStr" min="0" max="2" step="1" value="1"></label>
+      <label class="check"><input type="checkbox" id="clGate" checked> تخفيف الصدى والذيول بين الكلمات</label>
+      <label class="check"><input type="checkbox" id="clNorm" checked> موازنة مستوى الصوت</label>
+      <button class="btn primary block lg" id="clGo" disabled><span class="btxt">نقِّ الصوت</span><span class="spin"></span></button>
+      <div class="progress" id="clProg" hidden><i></i></div>
+    </div>
+    <div class="col">
+      <div class="card pad"><h3 class="h3">قبل</h3><div id="clBefore" class="outs"><div class="empty">اختر ملفًا أو سجّل.</div></div></div>
+      <div class="card pad"><h3 class="h3">بعد</h3><div id="clAfter" class="outs"><div class="empty">النتيجة بتظهر هنا.</div></div><p class="muted small" id="clStats"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENT -->
+<section class="view" id="v-agent" hidden>
+  <div class="agent-wrap">
+    <div class="agent-main card">
+      <div class="agent-top">
+        <div class="call-pill" id="callPill"><span class="live-dot"></span><span id="callLabel">جاهز</span><span id="callTime" class="mono">00:00</span></div>
+        <div class="row gap-s">
+          <select id="agVoice" class="mini-select" aria-label="صوت الوكيل"></select>
+          <button class="btn sm danger-soft" id="btnHandover">تحويل لموظف</button>
+        </div>
+      </div>
+      <div class="orb-zone">
+        <button class="orb" id="orb" aria-label="ابدأ المكالمة"><span class="ring r1"></span><span class="ring r2"></span><span class="core"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-3.1A7 7 0 0 1 5 11z"/></svg></span></button>
+        <div class="agent-status" id="agStatus">اضغط وكلّم رفيج بلهجتك</div>
+        <div class="agent-hint muted" id="agHint">مثلًا: «أبا أغيّر موعد التسليم ليوم الخميس»</div>
+      </div>
+      <div class="transcript-live" id="agLog"></div>
+      <form class="agent-input" id="agForm" autocomplete="off">
+        <input id="agText" dir="auto" placeholder="أو اكتب رسالتك هنا…" aria-label="رسالة">
+        <button class="btn primary" id="agSend" type="submit">إرسال</button>
+        <button class="btn soft" id="agEnd" type="button" hidden>إنهاء المكالمة</button>
+      </form>
+    </div>
+    <aside class="agent-side col">
+      <div class="card pad">
+        <h3 class="h3">آخر فهم</h3>
+        <div class="kv"><span>اللهجة</span><b id="agDialect">—</b></div>
+        <div class="kv"><span>النية</span><b id="agIntent" class="mono">—</b></div>
+        <div class="kv"><span>الثقة</span><b id="agConf">—</b></div>
+      </div>
+      <div class="card pad">
+        <div class="row between"><h3 class="h3">الطلب التجريبي</h3><button class="btn sm soft" id="agResetState">إعادة</button></div>
+        <div id="agState"></div>
+      </div>
+      <div class="card pad">
+        <h3 class="h3">سجل الإجراءات</h3>
+        <div id="agActions" class="actions"><div class="empty sm">ما فيه إجراءات بعد.</div></div>
+      </div>
+      <details class="card pad kb">
+        <summary><h3 class="h3">قاعدة المعرفة</h3><span class="muted small">عدّلها، ورفيج يعتمد عليها في ردوده</span></summary>
+        <textarea id="agKb" dir="auto"></textarea>
+        <div class="row gap-s"><button class="btn sm primary" id="agKbSave">حفظ</button><button class="btn sm soft" id="agKbReset">الافتراضي</button></div>
+      </details>
+    </aside>
+  </div>
+</section>
+
+</main>
+
+<nav class="tabbar" id="tabbar"></nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="app.js?v=1"></script>
+</body>
+</html>
