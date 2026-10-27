@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 <header class="topbar">
@@ -48,6 +48,8 @@
     <a class="feature card" href="#stt"><div class="ficon f-stt"><svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 4h10v2H4zm0 4h16v2H4zm0 4h10v2H4z"/></svg></div><h3>الصوت إلى نص</h3><p>تفريغ مباشر من المايك أو من ملف، بلهجة المتكلم كما هي، مع كشف اللهجة وترجمة إنجليزية.</p><span class="go">افتح ←</span></a>
     <a class="feature card" href="#clean"><div class="ficon f-clean"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4v2h-3l-3 3-1.6-4L10 22 7 10l-1 2H3z"/></svg></div><h3>تنقية الصوت</h3><p>إزالة الضوضاء من تسجيلاتك على جهازك مباشرة بتقنية RNNoise، بدون رفع الملف لأي خادم.</p><span class="go">افتح ←</span></a>
   </div>
+  <div class="section-title"><h2>وأكثر بوايد.</h2><p>ترجمة فورية، ملخص اجتماعات، ترجمات SRT، بودكاست بصوتين، ردود فويس، وصانع وكلاء لنشاطك.</p></div>
+  <div class="hub" id="homeHub"></div>
   <div class="section-title"><h2>مكتبة الأصوات</h2><p>اسمع، احفظ المفضل، واستخدمه بضغطة.</p></div>
   <div class="voice-strip" id="homeVoices"></div>
   <div class="card privacy">
@@ -76,8 +78,10 @@
       <div class="row wrap gap">
         <button class="btn soft" id="btnTashkeel"><b class="harakah">بَ</b> تشكيل تلقائي</button>
         <label class="field"><span>الأسلوب</span><select id="ttsStyle"><option value="warm">ودّي</option><option value="calm">هادئ</option><option value="formal">رسمي</option><option value="excited">حماسي</option><option value="ad">إعلاني</option><option value="story">قصصي</option></select></label>
+        <label class="field"><span>العاطفة</span><select id="ttsEmo"><option value="">طبيعية</option><option value="happy">فرحان</option><option value="sad">حزين</option><option value="serious">جاد</option><option value="proud">فخور</option><option value="playful">مازح</option><option value="angry">حازم</option><option value="whisper">همس</option></select></label>
         <label class="field"><span>السرعة</span><select id="ttsPace"><option value="slow">أبطأ</option><option value="normal" selected>عادية</option><option value="fast">أسرع</option></select></label>
       </div>
+      <div class="pitch"><label class="field wide"><span>طبقة الصوت <b id="ttsPitchV">0</b></span><input type="range" id="ttsPitch" min="-4" max="4" step="1" value="0"></label><button class="btn sm soft" id="btnSavePreset">★ احفظ كصوت مخصص</button></div>
       <button class="btn primary block lg" id="btnGen"><span class="btxt">ولّد الصوت</span><span class="spin"></span></button>
     </div>
     <div class="col">
@@ -200,10 +204,109 @@
   </div>
 </section>
 
+<!-- MORE -->
+<section class="view" id="v-more" hidden>
+  <div class="page-head"><h1>أدوات أكثر</h1><p>كل اللي تحتاجه للصوت العربي، في مكان واحد.</p></div>
+  <div class="hub" id="hub"></div>
+</section>
+
+<!-- TRANSLATE -->
+<section class="view" id="v-translate" hidden>
+  <div class="page-head"><h1>ترجمة فورية بالصوت</h1><p>اثنين يتكلمون بلغتين أو لهجتين، وكل واحد يسمع الثاني بلغته.</p></div>
+  <div class="card pad">
+    <div class="tr-sides">
+      <div class="tr-side"><label class="field wide"><span>الطرف الأول</span><select id="trA"></select></label><button class="mic-btn sm" id="trMicA" aria-label="تكلّم (الطرف الأول)"></button><span class="muted small" id="trStA">اضغط وتكلّم</span></div>
+      <button class="btn soft swap" id="trSwap" aria-label="تبديل">⇄</button>
+      <div class="tr-side"><label class="field wide"><span>الطرف الثاني</span><select id="trB"></select></label><button class="mic-btn sm alt" id="trMicB" aria-label="تكلّم (الطرف الثاني)"></button><span class="muted small" id="trStB">اضغط وتكلّم</span></div>
+    </div>
+    <label class="check"><input type="checkbox" id="trSpeak" checked> انطق الترجمة بصوت</label>
+  </div>
+  <div class="card pad"><div class="transcript-live tr-log" id="trLog"><div class="empty">ابدأ بالمايك أو اكتب تحت. الترجمة تطلع هنا وتنقرأ بصوت.</div></div>
+    <form class="agent-input" id="trForm" autocomplete="off"><select id="trWho" class="mini-select" aria-label="من يتكلم"><option value="A">الطرف الأول</option><option value="B">الطرف الثاني</option></select><input id="trText" dir="auto" placeholder="اكتب جملة للترجمة…"><button class="btn primary" type="submit">ترجم</button></form>
+  </div>
+</section>
+
+<!-- MEETING -->
+<section class="view" id="v-meeting" hidden>
+  <div class="page-head"><h1>ملخّص الاجتماعات والتسجيلات</h1><p>ارفع تسجيل أو سجّل الاجتماع، ونطلع لك النص بأسماء المتحدثين، الملخص، والمهام.</p></div>
+  <div class="grid-2">
+    <div class="col"><div class="card pad center-col" id="mtIn"></div>
+      <div class="card pad" id="mtSumCard" hidden><div class="row between"><h3 class="h3">الملخّص</h3><button class="btn sm soft" id="mtCopy">نسخ التقرير</button></div><p id="mtSummary" class="lh"></p><h4 class="h4">أهم النقاط</h4><ul id="mtPoints" class="lh"></ul><h4 class="h4">المهام</h4><div id="mtActions"></div><h4 class="h4">القرارات</h4><ul id="mtDecisions" class="lh"></ul></div></div>
+    <div class="card pad transcript-card"><h3 class="h3">النص بالمتحدثين</h3><div id="mtOut" class="transcript"><div class="empty">النص بيظهر هنا.</div></div></div>
+  </div>
+</section>
+
+<!-- SRT -->
+<section class="view" id="v-srt" hidden>
+  <div class="page-head"><h1>ترجمة الفيديو · ملفات SRT</h1><p>ارفع صوت أو فيديو، ونطلع لك ملف ترجمة جاهز بالتوقيت.</p></div>
+  <div class="grid-2">
+    <div class="card pad center-col" id="srtIn"></div>
+    <div class="card pad transcript-card"><div class="row between"><h3 class="h3">الأسطر</h3><div class="row gap-s"><button class="btn sm soft" id="srtDl">SRT</button><button class="btn sm soft" id="srtVtt">VTT</button><button class="btn sm soft" id="srtDlEn" hidden>SRT English</button></div></div><div id="srtOut" class="cues"><div class="empty">الأسطر بتظهر هنا مع التوقيت.</div></div></div>
+  </div>
+</section>
+
+<!-- PODCAST -->
+<section class="view" id="v-podcast" hidden>
+  <div class="page-head"><h1>صانع البودكاست</h1><p>اكتب الموضوع، ونكتب حوار بين مذيعين ونطلعه بصوتين.</p></div>
+  <div class="grid-2">
+    <div class="card pad col">
+      <label class="field wide"><span>الموضوع</span><textarea id="pdTopic" dir="auto" style="min-height:90px;border:1px solid var(--line);border-radius:12px;background:var(--card-solid)">قصة الغوص على اللؤلؤ في الخليج قبل النفط</textarea></label>
+      <div class="row wrap gap"><label class="field"><span>اللهجة</span><select id="pdDialect"></select></label><label class="field"><span>المذيع الأول</span><select id="pdA"></select></label><label class="field"><span>المذيع الثاني</span><select id="pdB"></select></label><label class="field"><span>الطول</span><select id="pdTurns"><option value="6">قصير</option><option value="8" selected>متوسط</option><option value="12">طويل</option></select></label></div>
+      <button class="btn primary block lg" id="pdScript"><span class="btxt">اكتب الحوار</span><span class="spin"></span></button>
+    </div>
+    <div class="card pad col"><div class="row between"><h3 class="h3" id="pdTitle">الحوار</h3><button class="btn sm primary" id="pdAudio" disabled><span class="btxt">حوّله لصوت</span><span class="spin"></span></button></div><div id="pdOut" class="outs"></div><div id="pdLines" class="pd-lines"><div class="empty">الحوار بيظهر هنا، وتقدر تعدّل أي سطر قبل التحويل لصوت.</div></div></div>
+  </div>
+</section>
+
+<!-- VOICENOTE -->
+<section class="view" id="v-voicenote" hidden>
+  <div class="page-head"><h1>رد على الفويس</h1><p>جاك فويس في الواتساب؟ سجّله أو ارفعه، وقول لنا وش تبي ترد، ونسوي لك فويس رد بصوت طبيعي.</p></div>
+  <div class="grid-2">
+    <div class="card pad col"><div id="vnIn" class="center-col"></div>
+      <label class="field wide"><span>أو الصق نص الرسالة</span><input id="vnText" dir="auto" class="inp" placeholder="مثلًا: هلا، بتيي العزيمة يوم الخميس؟"></label>
+      <label class="field wide"><span>وش تبي ترد؟ (اختياري)</span><input id="vnIntent" dir="auto" class="inp" placeholder="مثلًا: أكيد بيي بس بتأخر شوي"></label>
+      <div class="row wrap gap"><label class="field"><span>النبرة</span><select id="vnTone"><option value="friendly">ودّية</option><option value="formal">رسمية</option><option value="funny">مرحة</option><option value="apologetic">معتذرة</option><option value="short and direct">مختصرة</option></select></label><label class="field"><span>اللهجة</span><select id="vnDialect"><option value="">نفس لهجة المرسل</option></select></label><label class="field"><span>الصوت</span><select id="vnVoice"></select></label></div>
+      <button class="btn primary block lg" id="vnGo"><span class="btxt">سوّ لي الرد</span><span class="spin"></span></button>
+    </div>
+    <div class="card pad col" id="vnRes"><div class="empty">الرد بيظهر هنا جاهز للتنزيل أو المشاركة.</div></div>
+  </div>
+</section>
+
+<!-- BUILDER -->
+<section class="view" id="v-builder" hidden>
+  <div class="page-head"><h1>صانع الوكلاء</h1><p>سوّ وكيلك الصوتي لنشاطك: الاسم، المعرفة، النوايا، والنبرة. وبعدها خذ رابط تجربة أو كود تضمين لموقعك.</p></div>
+  <div class="grid-2">
+    <div class="card pad col">
+      <div class="row wrap gap"><label class="field wide f1"><span>اسم النشاط</span><input id="bdBiz" class="inp" dir="auto" placeholder="مثلًا: مطعم بيت الجدة"></label><label class="field wide f1"><span>اسم الوكيل</span><input id="bdName" class="inp" dir="auto" placeholder="مثلًا: سلامة"></label></div>
+      <label class="field wide"><span>رسالة الترحيب</span><input id="bdGreet" class="inp" dir="auto" placeholder="هلا وغلا، معاك سلامة من مطعم بيت الجدة. شو أقدر أخدمك؟"></label>
+      <div class="row wrap gap"><label class="field wide f1"><span>النبرة</span><select id="bdTone"><option value="ودّية ودافئة بلهجة إماراتية">ودّية إماراتية</option><option value="رسمية ومهنية">رسمية ومهنية</option><option value="مرحة وخفيفة">مرحة وخفيفة</option><option value="فاخرة وراقية">فاخرة وراقية</option></select></label><label class="field wide f1"><span>الصوت</span><select id="bdVoice"></select></label></div>
+      <label class="field wide"><span>قاعدة المعرفة</span><textarea id="bdKb" dir="auto" class="kbta" placeholder="ساعات العمل، الأسعار، العناوين، السياسات… (الوكيل ما يجاوب إلا منها)"></textarea></label>
+      <div><div class="row between"><h3 class="h3">النوايا والإجراءات</h3><button class="btn sm soft" id="bdAddIntent">+ نية</button></div><div id="bdIntents" class="col" style="gap:8px"></div></div>
+    </div>
+    <div class="col">
+      <div class="card pad col"><h3 class="h3">جرّب وشارك</h3>
+        <button class="btn primary block lg" id="bdTry">جرّب الوكيل الحين</button>
+        <label class="field wide"><span>رابط التجربة</span><div class="copyrow"><input id="bdLink" class="inp ltr" readonly><button class="btn sm soft" id="bdCopyLink">نسخ</button></div></label>
+        <label class="field wide"><span>كود التضمين في موقعك</span><div class="copyrow"><textarea id="bdEmbed" class="inp ltr code" readonly></textarea><button class="btn sm soft" id="bdCopyEmbed">نسخ</button></div></label>
+        <p class="muted small">الإعدادات محفوظة داخل الرابط نفسه (ما تنحفظ على خادم). أي أحد عنده الرابط يقدر يجرّب الوكيل.</p>
+        <button class="btn soft" id="bdSample">عبّي مثال جاهز</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="view" id="v-dashboard" hidden>
+  <div class="page-head"><h1>الاستخدام والسجل</h1><p>إحصاءات استخدامك على هذا الجهاز.</p></div>
+  <div class="stats" id="dbStats"></div>
+  <div class="grid-2"><div class="card pad"><h3 class="h3">آخر 7 أيام</h3><div id="dbChart" class="dbchart"></div></div><div class="card pad"><h3 class="h3">حسب الأداة</h3><div id="dbTools"></div></div></div>
+  <div class="card pad" style="margin-top:18px"><div class="row between"><h3 class="h3">السجل</h3><button class="btn sm soft" id="dbClear">مسح السجل</button></div><div id="dbHist" class="hist"></div></div>
+</section>
+
 </main>
 
 <nav class="tabbar" id="tabbar"></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script type="module" src="app.js?v=2"></script>
+<script type="module" src="app.js?v=4"></script>
 </body>
 </html>
