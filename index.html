@@ -3,25 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>رمسة — منصة الصوت العربي بلهجتك</title>
-<meta name="description" content="رمسة: حوّل النص إلى صوت باللهجة الإماراتية والسعودية والكويتية والمصرية، فرّغ الصوت إلى نص، نقِّ التسجيلات، وكلّم وكيلًا صوتيًا يفهم لهجتك.">
+<title>نَبرة — منصة الصوت العربي بلهجتك</title>
+<meta name="description" content="نبرة: حوّل النص إلى صوت باللهجة الإماراتية والسعودية والكويتية والمصرية، فرّغ الصوت إلى نص، نقِّ التسجيلات، وكلّم وكيلًا صوتيًا يفهم لهجتك.">
 <meta name="theme-color" content="#0d5c57" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b1416" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="رمسة">
+<meta name="apple-mobile-web-app-title" content="نبرة">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icons/favicon-64.png">
+<link rel="icon" href="icons/logo.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-64.png" sizes="64x64">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<meta property="og:title" content="نَبرة — منصة الصوت العربي بلهجتك"><meta property="og:image" content="icons/icon-512.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=4">
 <link rel="stylesheet" href="cc.css?v=1">
-<link rel="stylesheet" href="design.css?v=1">
+<link rel="stylesheet" href="design.css?v=2">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#home" aria-label="رمسة"><img src="icons/logo.svg" alt=""><span>رمسة</span></a>
+  <a class="brand" href="#home" aria-label="نبرة"><picture><source srcset="icons/logo-dark.svg" media="(prefers-color-scheme: dark)"><img src="icons/logo.svg" alt=""></picture><span>نَبرة</span></a>
   <nav class="topnav" id="topnav"></nav>
 </header>
 
@@ -32,6 +35,7 @@
   <div class="hero2">
     <div class="hero-bg" aria-hidden="true"><canvas id="heroOrb"></canvas></div>
     <div class="hero-copy reveal">
+      <div class="hero-logo" aria-hidden="true"><svg viewBox="0 0 64 64"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14857c"/><stop offset="1" stop-color="#0a3f3b"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#hg)"/><path class="hl-bowl" d="M17 24v7a15 15 0 0 0 30 0v-7" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round"/><circle class="hl-dot" cx="32" cy="17" r="4.4" fill="#f2c46d"/><path class="hl-r1" d="M26 11.5a8 8 0 0 0 0 11M38 11.5a8 8 0 0 1 0 11" fill="none" stroke="#f2c46d" stroke-width="2.6" stroke-linecap="round"/><path class="hl-r2" d="M21.5 8a13 13 0 0 0 0 18M42.5 8a13 13 0 0 1 0 18" fill="none" stroke="#f2c46d" stroke-width="2" stroke-linecap="round"/></svg><span>نَبرة</span></div>
       <div class="eyebrow"><span class="dot"></span>منصة الصوت العربي · صُنعت في الإمارات</div>
       <h1>صوتك العربي.<br><em>بكل لهجة.</em></h1>
       <p class="lead">٣٠ صوتًا و٢١ لهجة، من الإماراتي إلى المغربي. نطق طبيعي، تفريغ يعرف لهجتك، موظف خدمة عملاء يرد على الهاتف، استوديو للكتب الصوتية، ودبلجة للفيديو. كلها في مكان واحد.</p>
@@ -39,7 +43,7 @@
     </div>
     <div class="live-demo card reveal" id="liveDemo">
       <div class="ld-top"><span class="ld-dot"></span><b>جرّبها الحين</b><span class="muted small">اكتب واسمع فورًا</span></div>
-      <textarea id="ldText" rows="3" maxlength="300" dir="auto">هلا والله! أنا ميثاء من رمسة، أقدر أقرأ أي نص تكتبه بلهجتك. جرّب تكتب شي الحين.</textarea>
+      <textarea id="ldText" rows="3" maxlength="300" dir="auto">هلا والله! أنا ميثاء من نبرة، أقدر أقرأ أي نص تكتبه بلهجتك. جرّب تكتب شي الحين.</textarea>
       <div class="ld-row"><select id="ldDialect" aria-label="اللهجة"></select><select id="ldVoice" aria-label="الصوت"></select>
         <button class="btn primary ld-go" id="ldGo"><span class="btxt">اسمعها</span><span class="spin"></span></button></div>
       <div class="ld-wave"><canvas id="ldWave" height="56"></canvas></div>
@@ -93,13 +97,13 @@
     <details><summary>كل اللهجات بنفس الجودة؟</summary><p>لا. الخليجية والمصرية والشامية والفصحى الأقوى. بعض اللهجات (مثل المغاربية والسودانية) مكتوب جنبها «تجريبي» لأن النطق قريب لكن مو دائمًا أصلي. اختبرنا كل لهجة بمكتشف اللهجات حقنا، والنتائج في صفحة المشروع.</p></details>
     <details><summary>أقدر أربط رقم هاتف حقيقي؟</summary><p>الجسر جاهز على الخادم (Twilio). تحتاج حساب Twilio ورقم، والأرقام الإماراتية لها اشتراطات من هيئة TDRA. التفاصيل والتكاليف في دليل الربط.</p></details>
     <details><summary>وين تنحفظ بياناتي؟</summary><p>المشاريع والإعدادات والتسجيلات على جهازك (المتصفح). سجلات مركز الاتصال تنحفظ في قاعدة بيانات تجريبية مرتبطة بمعرّف عشوائي لجهازك.</p></details>
-    <details><summary>تقرأ القرآن الكريم؟</summary><p>لا. احترامًا لقدسية القرآن، رمسة ما تولّد تلاوة أو قراءة للآيات.</p></details>
+    <details><summary>تقرأ القرآن الكريم؟</summary><p>لا. احترامًا لقدسية القرآن، نبرة ما تولّد تلاوة أو قراءة للآيات.</p></details>
     <details><summary>كم السرعة؟</summary><p>النسخة المجانية تعتمد على حصة مجانية؛ الرد عادةً خلال ثوانٍ، لكن أحيانًا يتأخر أو نوصل الحد ونطلب منك تعيد بعد دقيقة.</p></details>
   </div>
 
   <div class="final-cta reveal"><h2>جاهز تسمع الفرق؟</h2><p>بدون حساب، ابدأ في ثواني.</p><div class="cta"><a class="btn primary lg" href="#tts">ابدأ مجانًا</a><a class="btn ghost lg" href="#api">للمطوّرين</a></div></div>
   <div class="hub" id="homeHub" hidden></div>
-  <footer class="foot">رمسة · نسخة تجريبية · <span id="year"></span> · <a href="#api">API</a> · <a href="#projects">مشاريعي</a></footer>
+  <footer class="foot">نبرة · نسخة تجريبية · <span id="year"></span> · <a href="#api">API</a> · <a href="#projects">مشاريعي</a></footer>
 </section>
 
 <!-- TTS -->
@@ -383,10 +387,10 @@
 
 <nav class="tabbar" id="tabbar"></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script type="module" src="app.js?v=7"></script>
-<script type="module" src="cc.js?v=2"></script>
+<script type="module" src="app.js?v=8"></script>
+<script type="module" src="cc.js?v=3"></script>
 <script type="module" src="scenarios.js?v=1"></script>
 <script type="module" src="home.js?v=1"></script>
-<script type="module" src="studio.js?v=1"></script>
+<script type="module" src="studio.js?v=2"></script>
 </body>
 </html>

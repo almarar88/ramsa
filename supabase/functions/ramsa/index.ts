@@ -1,5 +1,5 @@
 import { ccSys, runAction, insertRec, listRec, DOC_SYS, SUM_SYS, CAMP_SYS } from "./cc.ts";
-// Ramsa AI proxy: TTS, tashkeel, STT, voice agent. Key stays server-side.
+// Nabra AI proxy: TTS, tashkeel, STT, voice agent. Key stays server-side.
 const KEY = Deno.env.get("TV_AI_API_KEY") ?? "";
 const API = "https://generativelanguage.googleapis.com/v1beta/models/";
 const TTS_MODELS = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts"];
@@ -64,7 +64,7 @@ async function ttsRaw(prompt: string, speechConfig: any) {
   throw new Fail(last, last === "rate_limit" ? 429 : 502);
 }
 const EMO: Record<string, string> = { neutral: "", happy: "happy and cheerful", sad: "sad and gentle", angry: "firm and slightly angry", whisper: "soft, whispering", proud: "proud and grand", playful: "playful and teasing", serious: "serious and grave" };
-// Policy: Ramsa does not generate Quran recitation. Heuristic guard (Quranic brackets and well-known verses); not exhaustive.
+// Policy: Nabra does not generate Quran recitation. Heuristic guard (Quranic brackets and well-known verses); not exhaustive.
 const QURAN_RX = [/[﴿﴾]/, /قل هو الله أحد|قُلْ هُوَ اللَّهُ أَحَدٌ/, /الحمد لله رب العالمين\s*[،,.]?\s*الرحمن الرحيم/, /صدق الله العظيم/, /قل أعوذ برب (الفلق|الناس)/, /إنا أعطيناك الكوثر/, /الله لا إله إلا هو الحي القيوم/];
 export function quranGuard(t: string) { const plain = t.replace(/[\u064B-\u0652\u0670\u06D6-\u06ED]/g, ""); if (QURAN_RX.some((r) => r.test(plain) || r.test(t))) throw new Fail("quran_blocked", 400); }
 async function tts(text: string, voice: string, dialect: string, style: string, pace: string, emotion = "") {
@@ -133,7 +133,7 @@ JSON فقط:
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ ok: true, name: "ramsa" });
-  if (new URL(req.url).searchParams.get("echo") === "1") { let ev = ""; try { ev = String((await req.json()).event ?? ""); } catch {} return json({ ok: true, ref: "WH-" + Math.floor(100000 + Math.random() * 900000), message: "Received by the Ramsa demo webhook receiver", event: ev }); }
+  if (new URL(req.url).searchParams.get("echo") === "1") { let ev = ""; try { ev = String((await req.json()).event ?? ""); } catch {} return json({ ok: true, ref: "WH-" + Math.floor(100000 + Math.random() * 900000), message: "Received by the Nabra demo webhook receiver", event: ev }); }
   try {
     if (!KEY) throw new Fail("no_key", 500);
     const b = await req.json();

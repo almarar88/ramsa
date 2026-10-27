@@ -1,4 +1,4 @@
-/* Ramsa call center */
+/* Nabra call center */
 .h2{font-size:20px;margin:0}.spinner{width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:ccspin .8s linear infinite;margin:10px auto}
 @keyframes ccspin{to{transform:rotate(360deg)}}
 .warn{background:var(--gold-soft);border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);padding:10px 14px;border-radius:var(--r-s);font-size:13.5px;line-height:1.8;margin-bottom:12px}

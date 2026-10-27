@@ -1,4 +1,4 @@
-// رمسة — مركز الاتصال الذكي (Call Center)
+// نبرة — مركز الاتصال الذكي (Call Center)
 const R = window.__ramsa, L = R.lib;
 const { h, $, $$, ico, api, toast, errMsg, store, Mic, concat, resample, encodeWav, audioToWav, decodeFile, makePlayer, fmtT, rmsOf, VOICES, AGENT_VOICES, DIALECT_AR, dlText, bindDrop, b64ToBytes, bytesToB64, actx, toMono, playSample, API_URL } = L;
 // Skip null/false children in DOM insertion helpers (conditional UI parts).
@@ -141,12 +141,12 @@ const STEP_UI = {
   },
   act: () => {
     const wh = (P.webhooks ||= {});
-    const one = (k, l) => h("div", { class: "erow" }, h("span", { class: "whl" }, l), inp(wh[k], (v) => (wh[k] = v.trim()), { class: "inp ltr", placeholder: "https://your-system.com/hooks/" + k, style: "flex:3" }), h("button", { class: "btn sm soft", title: "مستقبل تجريبي من رمسة", onclick: (e) => { wh[k] = ECHO_URL; saveP(); e.currentTarget.previousSibling.value = ECHO_URL; } }, "تجريبي"));
-    return [h("p", { class: "muted" }, "لما يحتاج الموظف ينفّذ إجراء، يرسل طلب POST بصيغة JSON لنظامك. إذا ما حطيت رابط، تنحفظ العملية في قاعدة البيانات التجريبية لرمسة وتظهر في لوحة التحكم."),
+    const one = (k, l) => h("div", { class: "erow" }, h("span", { class: "whl" }, l), inp(wh[k], (v) => (wh[k] = v.trim()), { class: "inp ltr", placeholder: "https://your-system.com/hooks/" + k, style: "flex:3" }), h("button", { class: "btn sm soft", title: "مستقبل تجريبي من نبرة", onclick: (e) => { wh[k] = ECHO_URL; saveP(); e.currentTarget.previousSibling.value = ECHO_URL; } }, "تجريبي"));
+    return [h("p", { class: "muted" }, "لما يحتاج الموظف ينفّذ إجراء، يرسل طلب POST بصيغة JSON لنظامك. إذا ما حطيت رابط، تنحفظ العملية في قاعدة البيانات التجريبية لنبرة وتظهر في لوحة التحكم."),
       one("booking", "الحجوزات"), one("order_status", "حالة الطلب"), one("ticket", "الشكاوى والتذاكر"), one("callback", "معاودة الاتصال"),
-      field("مفتاح توقيع الويبهوك (اختياري: يُرسل كـ HMAC-SHA256 في X-Ramsa-Signature)", inp(P.webhook_secret, (v) => (P.webhook_secret = v), { class: "inp ltr", placeholder: "secret", type: "password", autocomplete: "off" })),
-      h("details", { class: "code-help" }, h("summary", {}, "شكل الطلب والرد المتوقع"), h("pre", { class: "code ltr" }, `POST {your url}\nHeaders: X-Ramsa-Event: booking | order_status | ticket | callback\n         X-Ramsa-Signature: sha256=<hmac of body>  (if secret set)\nBody: {"event":"booking","params":{"service":"تنظيف أسنان","date":"2026-10-28","time":"17:00","name":"أحمد","phone":"+9715..."},\n       "call":{"id":"...","caller":"+9715...","company":"..."},"sent_at":"ISO"}\n\nExpected reply (JSON, within 6s):\n  booking/ticket/callback → {"ref":"BK-1234"}\n  order_status → {"found":true,"status":"...","eta":"...","item":"..."}`)),
-      h("p", { class: "muted small" }, "تنبيه: مفتاح التوقيع ينحفظ مع إعدادات الشركة على جهازك وفي قاعدة بيانات رمسة عند النشر. استخدم مفتاح مخصص لهذا الغرض فقط.")];
+      field("مفتاح توقيع الويبهوك (اختياري: يُرسل كـ HMAC-SHA256 في X-Nabra-Signature)", inp(P.webhook_secret, (v) => (P.webhook_secret = v), { class: "inp ltr", placeholder: "secret", type: "password", autocomplete: "off" })),
+      h("details", { class: "code-help" }, h("summary", {}, "شكل الطلب والرد المتوقع"), h("pre", { class: "code ltr" }, `POST {your url}\nHeaders: X-Nabra-Event: booking | order_status | ticket | callback\n         X-Nabra-Signature: sha256=<hmac of body>  (if secret set)\nBody: {"event":"booking","params":{"service":"تنظيف أسنان","date":"2026-10-28","time":"17:00","name":"أحمد","phone":"+9715..."},\n       "call":{"id":"...","caller":"+9715...","company":"..."},"sent_at":"ISO"}\n\nExpected reply (JSON, within 6s):\n  booking/ticket/callback → {"ref":"BK-1234"}\n  order_status → {"found":true,"status":"...","eta":"...","item":"..."}`)),
+      h("p", { class: "muted small" }, "تنبيه: مفتاح التوقيع ينحفظ مع إعدادات الشركة على جهازك وفي قاعدة بيانات نبرة عند النشر. استخدم مفتاح مخصص لهذا الغرض فقط.")];
   },
   done: () => {
     const miss = []; if (!P.name) miss.push("اسم الشركة"); if (!P.kb && !(P.faqs || []).length) miss.push("المعرفة أو الأسئلة الشائعة"); if (!(P.services || []).length) miss.push("الخدمات");
@@ -218,7 +218,7 @@ function addAct(a, r) {
   const box = $("#simActs"); $(".empty", box)?.remove();
   const ok = r ? r.type === "order_status" ? r.order?.found !== false : !!r.ref : true;
   const det = r?.ref ? `رقم المرجع ${r.ref}` : r?.order ? (r.order.found === false ? `طلب ${r.order.order_id || ""} غير موجود` : `${r.order.item || ""} · ${r.order.status || ""}`) : a.params?.reason || "";
-  box.prepend(h("div", { class: "act-card " + (ok ? "ok" : "bad") }, h("b", {}, (ok ? "✓ " : "! ") + (ACT_AR[a.type] || a.type)), h("div", { class: "small" }, det), r ? h("div", { class: "muted small ltr" }, r.source === "webhook" ? `webhook ✓ ${r.webhook?.ms ?? ""}ms` : r.webhook ? `webhook ✗ (${r.webhook.error || r.webhook.status}) → demo DB` : r.saved ? "saved → Ramsa demo DB" : r.type === "order_status" ? "demo orders" : "local") : null,
+  box.prepend(h("div", { class: "act-card " + (ok ? "ok" : "bad") }, h("b", {}, (ok ? "✓ " : "! ") + (ACT_AR[a.type] || a.type)), h("div", { class: "small" }, det), r ? h("div", { class: "muted small ltr" }, r.source === "webhook" ? `webhook ✓ ${r.webhook?.ms ?? ""}ms` : r.webhook ? `webhook ✗ (${r.webhook.error || r.webhook.status}) → demo DB` : r.saved ? "saved → Nabra demo DB" : r.type === "order_status" ? "demo orders" : "local") : null,
     a.params && Object.keys(a.params).length ? h("div", { class: "params ltr" }, Object.entries(a.params).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join(" · ")) : null));
   sim.acts.push({ type: a.type, params: a.params, ref: r?.ref, source: r?.source, ok });
 }
@@ -416,7 +416,7 @@ async function finishCall() {
   const stars = h("div", { class: "stars" }, ...[1, 2, 3, 4, 5].map((n) => h("button", { "aria-label": `${n} نجوم`, onclick: async () => { $$("button", stars).forEach((b, i) => b.classList.toggle("on", i < n)); record.data.csat = n; toast("شكرًا على التقييم ✓"); if (res?.id) api("cc_update", { ws: WS, id: res.id, data: record.data }).catch(() => {}); } }, "★")));
   box.replaceChildren(...(a ? [h("div", { class: "row gap wrap center" }, chip(INTENT_AR[a.intent] || a.intent), h("span", { class: "chip sm", style: `color:${SENT_C[a.sentiment]}` }, "● " + (SENT_AR[a.sentiment] || "")), chip(a.resolved ? "✓ انحلّت" : sim.transferred ? "محوّلة لموظف" : "تحتاج متابعة", a.resolved ? "ok" : "gold")),
     h("p", { class: "lh small", dir: "auto" }, a.summary), a.follow_up ? h("p", { class: "small muted" }, "المتابعة: " + a.follow_up) : null] : [h("p", { class: "muted small" }, "ما قدرنا نجهّز الملخص الحين (" + errMsg(res?.error) + ").")]),
-    h("div", { class: "small" }, "قيّم المكالمة (CSAT):"), stars, wav ? makePlayer({ title: "تسجيل المكالمة", wav, filename: `ramsa-call-${sim.callId}.wav` }) : null,
+    h("div", { class: "small" }, "قيّم المكالمة (CSAT):"), stars, wav ? makePlayer({ title: "تسجيل المكالمة", wav, filename: `nabra-call-${sim.callId}.wav` }) : null,
     h("div", { class: "row gap center" }, h("button", { class: "btn sm primary", onclick: () => { sim.out = null; screen("idle"); } }, "مكالمة جديدة"), h("a", { class: "btn sm soft", href: "#cc" }, "لوحة التحكم")),
     res?.save_error || (!res?.id && a) ? h("div", { class: "muted small" }, "تنبيه: ما انحفظت في قاعدة البيانات.") : null);
   dash.cache = null;
@@ -637,7 +637,7 @@ function queueTab(calls, rows) {
 function recordsTab(rows) {
   const sect = (kind, title, cols, map) => { const list = rows.filter((r) => r.kind === kind); return h("div", { class: "card pad" }, h("h3", { class: "h3" }, `${title} (${list.length})`), list.length ? h("div", { class: "tbl-wrap" }, h("table", { class: "tbl" }, h("thead", {}, h("tr", {}, ...cols.map((c) => h("th", {}, c)))), h("tbody", {}, ...list.map((r) => h("tr", {}, ...map(r).map((v) => h("td", { dir: "auto" }, v ?? "—"))))))) : h("div", { class: "empty sm" }, "لا يوجد بعد")); };
   const t = (r) => new Date(r.created_at).toLocaleString("ar-AE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-  return [sect("booking", "الحجوزات", ["المرجع", "الخدمة", "الموعد", "الاسم", "الهاتف", "المصدر", "أُنشئ"], (r) => [r.ref, r.data.params?.service, `${r.data.params?.date || ""} ${r.data.params?.time || ""}`, r.data.params?.name, r.data.params?.phone || r.data.caller, r.data.source === "webhook" ? "ويبهوك" : "قاعدة رمسة", t(r)]),
+  return [sect("booking", "الحجوزات", ["المرجع", "الخدمة", "الموعد", "الاسم", "الهاتف", "المصدر", "أُنشئ"], (r) => [r.ref, r.data.params?.service, `${r.data.params?.date || ""} ${r.data.params?.time || ""}`, r.data.params?.name, r.data.params?.phone || r.data.caller, r.data.source === "webhook" ? "ويبهوك" : "قاعدة نبرة", t(r)]),
     sect("ticket", "التذاكر والشكاوى", ["المرجع", "النوع", "الأهمية", "الملخص", "الحالة", "أُنشئ"], (r) => [r.ref, r.data.params?.category, r.data.params?.severity, r.data.params?.summary, r.status === "open" ? "مفتوحة" : "محلولة", t(r)]),
     sect("callback", "طلبات معاودة الاتصال", ["المرجع", "الاسم", "الهاتف", "الوقت المفضل", "السبب", "الحالة"], (r) => [r.ref, r.data.params?.name, r.data.params?.phone || r.data.caller, r.data.params?.preferred_time, r.data.params?.reason, r.status === "open" ? "مفتوح" : "تم"]),
     sect("notification", "إشعارات العملاء (محاكاة واتساب/SMS)", ["القناة", "إلى", "الرسالة", "الوقت"], (r) => [r.data.channel === "sms" ? "SMS" : "واتساب", r.data.to, r.data.text, t(r)])];
@@ -653,7 +653,7 @@ function phoneTab() {
     h("div", { class: "card pad col" }, h("h3", { class: "h3" }, "الواقع بصراحة"), h("ul", { class: "lh small" },
       h("li", {}, "الأرقام الإماراتية الجغرافية عند Twilio للاستقبال فقط، والأرقام المجانية 800 تحتاج خطاب تفويض (LOA)، والتوفر غير مضمون."),
       h("li", {}, "خدمات الصوت عبر الإنترنت في الإمارات منظّمة من هيئة TDRA: تحتاج تعاون مع e& أو du أو موافقة من الهيئة. للإنتاج الأنسب: SIP trunk من e&/du أو مزوّد معتمد، أو تحويل رقمك الحالي للجسر."),
-      h("li", {}, "صوت الخط الحقيقي في الجسر: Amazon Polly (Hala/Zayd بلهجة خليجية) لسرعة الرد، أو Gemini (أصوات رمسة) مع تأخير أعلى."),
+      h("li", {}, "صوت الخط الحقيقي في الجسر: Amazon Polly (Hala/Zayd بلهجة خليجية) لسرعة الرد، أو Gemini (أصوات نبرة) مع تأخير أعلى."),
       h("li", {}, "التكلفة التقريبية عند Twilio (حسب صفحة الأسعار اليوم): التعرّف على الكلام 0.02$ لكل مقطع، الصوت العصبي 0.0032$ لكل 100 حرف، والاتصال الصادر داخل الإمارات 0.30–0.36$ للدقيقة، والأرقام تبدأ من 1$ شهريًا وتختلف حسب الدولة."))))];
 }
 async function renderDash(force) {
@@ -673,7 +673,7 @@ $("#ccCsv").onclick = async () => {
   const calls = callsOf(await loadDash());
   if (!calls.length) return toast("ما فيه مكالمات للتصدير.");
   dlText(csv([["id", "datetime", "caller", "direction", "channel", "duration_sec", "intent", "sentiment", "resolved", "transferred", "csat", "csat_predicted", "avg_latency_ms", "turns", "dialect", "summary", "follow_up", "actions", "demo"],
-    ...calls.map((c) => { const a = c.data.analysis || {}; return [c.id, c.created_at, c.data.caller, c.data.direction, c.data.channel, c.data.duration, a.intent, a.sentiment, a.resolved, c.data.transferred, c.data.csat ?? "", a.csat_pred ?? "", c.data.avg_latency ?? "", c.data.turns, (c.data.dialects || []).join("|"), a.summary, a.follow_up, (c.data.actions || []).map((x) => x.type + (x.ref ? ":" + x.ref : "")).join("|"), c.demo ? "yes" : ""]; })]), `ramsa-calls-${new Date().toISOString().slice(0, 10)}.csv`, "text/csv");
+    ...calls.map((c) => { const a = c.data.analysis || {}; return [c.id, c.created_at, c.data.caller, c.data.direction, c.data.channel, c.data.duration, a.intent, a.sentiment, a.resolved, c.data.transferred, c.data.csat ?? "", a.csat_pred ?? "", c.data.avg_latency ?? "", c.data.turns, (c.data.dialects || []).join("|"), a.summary, a.follow_up, (c.data.actions || []).map((x) => x.type + (x.ref ? ":" + x.ref : "")).join("|"), c.demo ? "yes" : ""]; })]), `nabra-calls-${new Date().toISOString().slice(0, 10)}.csv`, "text/csv");
 };
 
 // ================= CAMPAIGNS =================
@@ -711,7 +711,7 @@ $("#coRun").onclick = async (ev) => {
   camp.running = null; btn.classList.remove("loading"); renderCamp();
   api("cc_company", { ws: WS, profile: profileForApi() }).catch(() => {});
 };
-$("#coCsv").onclick = () => { if (!camp.results?.length) return toast("شغّل الحملة أول."); dlText(csv([["name", "phone", "detail", "outcome", "result", "score", "sentiment", "summary"], ...camp.results.map((r) => [r.name, r.phone, r.detail, r.outcome, r.detail, r.score ?? "", r.sentiment ?? "", r.summary ?? ""])]), `ramsa-campaign-${camp.type}.csv`, "text/csv"); };
+$("#coCsv").onclick = () => { if (!camp.results?.length) return toast("شغّل الحملة أول."); dlText(csv([["name", "phone", "detail", "outcome", "result", "score", "sentiment", "summary"], ...camp.results.map((r) => [r.name, r.phone, r.detail, r.outcome, r.detail, r.score ?? "", r.sentiment ?? "", r.summary ?? ""])]), `nabra-campaign-${camp.type}.csv`, "text/csv"); };
 function callMe(c) { sessionStorage.setItem("ccOut", JSON.stringify({ contact: c, type: camp.type, typeLabel: CAMP[camp.type].label, script: camp.script })); location.hash = "cccall?out=1"; }
 
 // ================= ROUTE HOOK =================

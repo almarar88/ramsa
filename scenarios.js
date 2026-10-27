@@ -1,4 +1,4 @@
-// رمسة — «جرّب مكالمة»: ready demo call scenarios with FICTIONAL brands and fake customer databases.
+// نبرة — «جرّب مكالمة»: ready demo call scenarios with FICTIONAL brands and fake customer databases.
 const L = window.__ramsa.lib; const { h, $, $$ } = L;
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const hrs = (from = "08:00", to = "22:00", fri = true) => Object.fromEntries(DAYS.map((d) => [d, { open: d !== "fri" || fri, from, to }]));

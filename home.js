@@ -1,4 +1,4 @@
-// رمسة — home page interactions, scroll reveals, live demo, dialect showcase.
+// نبرة — home page interactions, scroll reveals, live demo, dialect showcase.
 const L = window.__ramsa.lib;
 const { h, $, $$, api, toast, errMsg, audioToWav, actx, VOICES, DIALECTS, DGROUP, REGIONS, DQUAL, DNAME, dialectSelect, SAMPLE_TEXT } = L;
 const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;

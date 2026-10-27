@@ -1,4 +1,4 @@
-// رمسة — Arabic voice platform (client)
+// نبرة — Arabic voice platform (client)
 const API_URL = "https://olkhmscftouksbgjmtjt.supabase.co/functions/v1/ramsa";
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -10,7 +10,7 @@ const I = { play: "M8 5v14l11-7z", pause: "M6 5h4v14H6zm8 0h4v14h-4z", dl: "M12 
 // ---------- errors & api ----------
 const ERR = {
   rate_limit: "وصلنا الحد المجاني للطلبات حاليًا. انتظر دقيقة وجرّب مرة ثانية.",
-  quran_blocked: "رمسة ما تولّد تلاوة أو قراءة لآيات القرآن الكريم احترامًا لقدسيته. جرّب نصًا آخر.",
+  quran_blocked: "نبرة ما تولّد تلاوة أو قراءة لآيات القرآن الكريم احترامًا لقدسيته. جرّب نصًا آخر.",
   busy: "الخدمة مزدحمة الحين. جرّب بعد لحظات.", timeout: "الطلب أخذ وقت أطول من اللازم. جرّب مرة ثانية.",
   too_long: "المحتوى أطول من المسموح.", empty_text: "اكتب نص أول.", empty_audio: "ما وصلنا صوت واضح. جرّب مرة ثانية.",
   network: "تأكد من اتصالك بالإنترنت وجرّب مرة ثانية.", bad_output: "صار خطأ في معالجة الرد. جرّب مرة ثانية.",
@@ -110,7 +110,7 @@ function meterDraw(cv, hist) { const dpr = devicePixelRatio || 1, w = cv.clientW
 const DIALECTS = [["ae", "إماراتي"], ["sa", "سعودي نجدي"], ["hj", "سعودي حجازي"], ["kw", "كويتي"], ["qa", "قطري"], ["bh", "بحريني"], ["om", "عُماني"], ["iq", "عراقي"], ["sy", "سوري"], ["lb", "لبناني"], ["jo", "أردني"], ["ps", "فلسطيني"], ["eg", "مصري"], ["sd", "سوداني"], ["ma", "مغربي"], ["dz", "جزائري"], ["tn", "تونسي"], ["ly", "ليبي"], ["ye", "يمني"], ["msa", "فصحى"], ["en", "English"]];
 const DGROUP = {"ae": "gulf", "sa": "gulf", "hj": "gulf", "kw": "gulf", "qa": "gulf", "bh": "gulf", "om": "gulf", "iq": "iq", "sy": "lev", "lb": "lev", "jo": "lev", "ps": "lev", "eg": "nile", "sd": "nile", "ma": "mag", "dz": "mag", "tn": "mag", "ly": "mag", "ye": "iq", "msa": "std", "en": "std"};
 const REGIONS = [["gulf", "الخليج"], ["iq", "العراق واليمن"], ["lev", "الشام"], ["nile", "مصر والسودان"], ["mag", "المغرب العربي"], ["std", "فصحى وEnglish"]];
-// Verified by generating each dialect and running Ramsa's own dialect detector on it (see README): "weak" = sounds close but not reliably native.
+// Verified by generating each dialect and running Nabra's own dialect detector on it (see README): "weak" = sounds close but not reliably native.
 const DQUAL = {};
 const DNAME = Object.fromEntries(DIALECTS);
 const dialectSelect = (sel, val) => { sel.replaceChildren(...REGIONS.map(([g, gl]) => h("optgroup", { label: gl }, ...DIALECTS.filter(([k]) => DGROUP[k] === g).map(([k, l]) => h("option", { value: k }, l + (DQUAL[k] === "weak" ? " (تجريبي)" : "")))))); if (val) sel.value = val; return sel; };
@@ -151,8 +151,8 @@ const SAMPLE_TEXT = {
   sa: "يا هلا والله! [laughs] وش هالأخبار الزينة؟ ترى من زمان ما سمعنا شي يفرّح مثل كذا، الله يتمم على خير.",
   kw: "هلا والله وغلا! شلونك؟ [chuckle] والله اشتقنا، تعال باجر نتقهوى ونسولف على راحتنا.",
   eg: "أهلًا أهلًا! [laughs] إيه الأخبار الحلوة دي؟ بجد فرحتني، استنى بس أحكيلك الحكاية من الأول.",
-  msa: "مرحبًا بكم في رمسة، المنصة التي تحوّل النص العربي إلى صوت طبيعي واضح، بلهجات متعددة وبجودة عالية.",
-  en: "Welcome to Ramsa! [chuckle] Type anything, pick a voice, and hear it come to life in seconds.",
+  msa: "مرحبًا بكم في نبرة، المنصة التي تحوّل النص العربي إلى صوت طبيعي واضح، بلهجات متعددة وبجودة عالية.",
+  en: "Welcome to Nabra! [chuckle] Type anything, pick a voice, and hear it come to life in seconds.",
   hj: "أهلين، إيش أخبارك؟ والله أبغى أقولك حاجة، دحين الزحمة مرة كتير، خلينا نتقابل بكرة العصر إن شاء الله.",
   qa: "هلا والله، شلونك؟ يبا أقولك شي، الحين الزحمة وايد، خلنا نتلاقى باجر العصر إن شاء الله.",
   bh: "هلا والله، شلونك؟ شنو أخبارك؟ الحين الزحمة وايد، خلنا نتلاقى باجر العصر إن شاء الله.",
@@ -197,7 +197,7 @@ function route() {
   $$(".view").forEach((v) => (v.hidden = v.id !== "v-" + ok)); $$("[data-r]").forEach((a) => a.classList.toggle("on", a.dataset.r === ok || (a.dataset.r === "cc" && CC_OF.includes(ok)) || (a.dataset.r === "more" && MORE_OF.includes(ok) && !(a.closest("#topnav") && ok === "clean"))));
   if (ok === "agent") applyAgentCfgFromHash(); if (ok === "dashboard") renderDash(); if (ok !== "translate" && tr.rec) tr.stop();
   if (ok !== "agent" && call.on) endCall(); window.__cc?.route(ok); window.__studio?.route(ok); if (ok !== "stt" && stt.rec) stopStt();
-  window.scrollTo({ top: 0 }); document.title = ok === "home" ? "رمسة — منصة الصوت العربي بلهجتك" : `${ROUTES.find((r) => r[0] === ok)[1]} · رمسة`;
+  window.scrollTo({ top: 0 }); document.title = ok === "home" ? "نَبرة — منصة الصوت العربي بلهجتك" : `${ROUTES.find((r) => r[0] === ok)[1]} · نبرة`;
 }
 addEventListener("hashchange", route);
 
@@ -275,7 +275,7 @@ $("#btnGen").onclick = async (ev) => {
     let wav = audioToWav(r.audio, r.mime); const semi = +$("#ttsPitch").value;
     if (semi) { const buf = await actx().decodeAudioData(wav.slice().buffer); wav = encodeWav(pitchShift(buf.getChannelData(0), semi), buf.sampleRate); } const out = $("#ttsOut"); $(".empty", out)?.remove();
     const stamp = new Date().toLocaleTimeString("ar-AE", { hour: "2-digit", minute: "2-digit" });
-    out.prepend(makePlayer({ title: `${tts.preset ? "★ " + (presets.find((p) => p.id === tts.preset)?.name || v.name) : v.name} · ${DNAME[tts.dialect]} · ${stamp} — ${text.replace(/\s+/g, " ").slice(0, 60)}`, wav, filename: `ramsa-${v.id}-${Date.now()}.wav`, autoplay: true }));
+    out.prepend(makePlayer({ title: `${tts.preset ? "★ " + (presets.find((p) => p.id === tts.preset)?.name || v.name) : v.name} · ${DNAME[tts.dialect]} · ${stamp} — ${text.replace(/\s+/g, " ").slice(0, 60)}`, wav, filename: `nabra-${v.id}-${Date.now()}.wav`, autoplay: true }));
     while (out.children.length > 8) out.lastChild.remove();
     if (innerWidth < 980) out.scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (e) { toast(errMsg(e.code), true); }
@@ -334,7 +334,7 @@ bindDrop($("#sttDrop"), $("#sttInput"), async (file) => {
 $("#sttTrToggle").onclick = () => { stt.showEn = !stt.showEn; renderStt(); };
 const sttPlain = () => stt.segs.filter((s) => s.text).map((s) => s.text + (stt.showEn && s.en ? `\n${s.en}` : "")).join(stt.showEn ? "\n\n" : " ");
 $("#sttCopy").onclick = async () => { const t = sttPlain(); if (!t) return toast("ما فيه نص للنسخ."); try { await navigator.clipboard.writeText(t); toast("تم النسخ ✓"); } catch { toast("ما قدرنا ننسخ.", true); } };
-$("#sttDl").onclick = () => { const t = sttPlain(); if (!t) return toast("ما فيه نص للتنزيل."); const a = h("a", { href: URL.createObjectURL(new Blob(["\ufeff" + t], { type: "text/plain;charset=utf-8" })), download: `ramsa-transcript-${Date.now()}.txt` }); a.click(); };
+$("#sttDl").onclick = () => { const t = sttPlain(); if (!t) return toast("ما فيه نص للتنزيل."); const a = h("a", { href: URL.createObjectURL(new Blob(["\ufeff" + t], { type: "text/plain;charset=utf-8" })), download: `nabra-transcript-${Date.now()}.txt` }); a.click(); };
 $("#sttReset").onclick = () => { stt.segs = []; stt.votes = {}; $("#sttDialectCard").hidden = true; renderStt(); };
 
 // ---------- CLEAN ----------
@@ -374,7 +374,7 @@ $("#clGo").onclick = async (ev) => {
     for (let f = 0; f < nf; f++) { const o = f * n; const rb = rmsOf(x.subarray(o, o + n)) * kIn, ra = rmsOf(out.subarray(o, o + n)); if (vads[f] < 0.15) { nb += rb * rb; na += ra * ra; c++; } else if (vads[f] > 0.8) { sb += rb * rb; sa += ra * ra; cs++; } }
     $("i", prog).style.width = "100%";
     const db = c > 20 && na > 0 ? (10 * Math.log10(nb / na)).toFixed(1) : null;
-    $("#clAfter").replaceChildren(makePlayer({ title: `${cl.name} · منقّى`, wav: encodeWav(out, 48000), filename: `ramsa-clean-${Date.now()}.wav`, autoplay: true }));
+    $("#clAfter").replaceChildren(makePlayer({ title: `${cl.name} · منقّى`, wav: encodeWav(out, 48000), filename: `nabra-clean-${Date.now()}.wav`, autoplay: true }));
     track("clean", true, cl.src.length / cl.sr, 0, { text: "" }, "", { text: cl.name }); $("#clStats").textContent = db ? `انخفض مستوى الضوضاء في المقاطع الخالية من الكلام بنحو ${db} ديسيبل (قياس على جهازك بعد موازنة المستوى).` : "تمت التنقية. (ما فيه مقاطع صامتة كافية لقياس الفرق.)";
   } catch (e) { console.error(e); toast("ما قدرنا ننقّي الملف على هذا الجهاز. جرّب متصفح أحدث.", true); }
   finally { b.classList.remove("loading"); $(".btxt", b).textContent = "نقِّ الصوت"; setTimeout(() => (prog.hidden = true), 600); }
@@ -528,7 +528,7 @@ const dlText = (text, name, type = "text/plain") => h("a", { href: URL.createObj
 const HUB = [["studio", "استوديو الكتب الصوتية", "فصول، شخصيات بأصوات مختلفة، وقفات وتأكيد، وتصدير WAV.", "f-tts", I.tts], ["dub", "دبلجة الفيديو", "فرّغ، ترجم، ودبلج بصوت جديد مع ملف ترجمة.", "f-clean", I.voices], ["advo", "إعلانات وريلز", "تعليق صوتي مع موسيقى تنخفض تلقائيًا تحت الصوت.", "f-agent", I.mic],["translate", "ترجمة فورية بالصوت", "بين اللهجات العربية والإنجليزية، لطرفين يتكلمون مباشرة.", "f-stt", I.mic], ["meeting", "ملخص الاجتماعات", "نص بأسماء المتحدثين، ملخص، مهام وقرارات.", "f-agent", I.stt],
   ["srt", "ترجمة الفيديو SRT", "ملف ترجمة بالتوقيت من أي صوت أو فيديو، عربي أو إنجليزي.", "f-clean", I.stt], ["podcast", "صانع البودكاست", "حوار بصوتين عن أي موضوع، بلهجتك.", "f-tts", I.tts],
   ["voicenote", "رد على الفويس", "سوّ فويس رد للواتساب بصوت طبيعي ولهجتك.", "f-agent", I.mic], ["builder", "صانع الوكلاء", "وكيل صوتي لنشاطك برابط تجربة وكود تضمين.", "f-tts", I.voices],
-  ["clean", "تنقية الصوت", "شيل الضوضاء من تسجيلاتك على جهازك.", "f-clean", I.clean], ["voices", "مكتبة الأصوات", "اسمع العيّنات واحفظ المفضل.", "f-stt", I.voices], ["dashboard", "الاستخدام والسجل", "إحصاءاتك وسجل طلباتك على هذا الجهاز.", "f-agent", I.stt], ["pron", "قاموس النطق", "علّم رمسة تنطق أسماء علامتك ومصطلحاتك صح.", "f-stt", I.tts], ["api", "للمطورين", "توثيق، تجربة مباشرة، وكود ودجت للتضمين.", "f-clean", I.stt], ["projects", "مشاريعي", "صدّر واستورد كل شغلك المحفوظ على هذا الجهاز.", "f-agent", I.voices]];
+  ["clean", "تنقية الصوت", "شيل الضوضاء من تسجيلاتك على جهازك.", "f-clean", I.clean], ["voices", "مكتبة الأصوات", "اسمع العيّنات واحفظ المفضل.", "f-stt", I.voices], ["dashboard", "الاستخدام والسجل", "إحصاءاتك وسجل طلباتك على هذا الجهاز.", "f-agent", I.stt], ["pron", "قاموس النطق", "علّم نبرة تنطق أسماء علامتك ومصطلحاتك صح.", "f-stt", I.tts], ["api", "للمطورين", "توثيق، تجربة مباشرة، وكود ودجت للتضمين.", "f-clean", I.stt], ["projects", "مشاريعي", "صدّر واستورد كل شغلك المحفوظ على هذا الجهاز.", "f-agent", I.voices]];
 const hubCard = ([id, t, d, c, ic]) => h("a", { class: "card", href: "#" + id }, h("div", { class: "ficon " + c }, ico(ic)), h("div", {}, h("h3", {}, t), h("p", {}, d)));
 $("#hub").append(...HUB.map(hubCard)); $("#homeHub").append(...HUB.slice(0, 6).map(hubCard));
 
@@ -574,7 +574,7 @@ audioInput($("#mtIn"), { max: 1800, btn: "حلّل التسجيل", onGo: async 
   mtReport = `ملخّص: ${rep.summary || ""}\n\nأهم النقاط:\n${(rep.key_points || []).map((x) => "• " + x).join("\n")}\n\nالمهام:\n${(rep.action_items || []).map((a) => `• ${a.task} — ${a.owner || "غير محدد"}${a.due ? " (" + a.due + ")" : ""}`).join("\n")}\n\nالقرارات:\n${(rep.decisions || []).map((x) => "• " + x).join("\n")}\n\nالنص:\n${segs.map((s) => `[${s.start}] ${s.speaker}: ${s.text}`).join("\n")}`;
   say(`تم ✓ · ${spk.length} متحدث · ${fmtT(mono.length / 16000)}`);
 } });
-$("#mtCopy").onclick = async () => { try { await navigator.clipboard.writeText(mtReport); toast("تم نسخ التقرير ✓"); } catch { dlText(mtReport, "ramsa-meeting.txt"); } };
+$("#mtCopy").onclick = async () => { try { await navigator.clipboard.writeText(mtReport); toast("تم نسخ التقرير ✓"); } catch { dlText(mtReport, "nabra-meeting.txt"); } };
 
 // ---------- SRT ----------
 let srtCues = [];
@@ -590,9 +590,9 @@ audioInput(srtIn, { max: 1200, btn: "طلّع ملف الترجمة", onGo: asyn
 } });
 srtIn.insertBefore(srtEn, srtIn.lastChild);
 const buildSrt = (key = "text") => srtCues.map((c, i) => `${i + 1}\n${srtTime(c.s)} --> ${srtTime(c.e)}\n${c[key] || c.text}\n`).join("\n");
-$("#srtDl").onclick = () => srtCues.length ? dlText("\ufeff" + buildSrt(), "ramsa-subtitles.srt", "application/x-subrip") : toast("طلّع الترجمة أول.");
-$("#srtDlEn").onclick = () => srtCues.length && dlText(buildSrt("en"), "ramsa-subtitles-en.srt", "application/x-subrip");
-$("#srtVtt").onclick = () => srtCues.length ? dlText("WEBVTT\n\n" + srtCues.map((c) => `${srtTime(c.s, ".")} --> ${srtTime(c.e, ".")}\n${c.text}\n`).join("\n"), "ramsa-subtitles.vtt", "text/vtt") : toast("طلّع الترجمة أول.");
+$("#srtDl").onclick = () => srtCues.length ? dlText("\ufeff" + buildSrt(), "nabra-subtitles.srt", "application/x-subrip") : toast("طلّع الترجمة أول.");
+$("#srtDlEn").onclick = () => srtCues.length && dlText(buildSrt("en"), "nabra-subtitles-en.srt", "application/x-subrip");
+$("#srtVtt").onclick = () => srtCues.length ? dlText("WEBVTT\n\n" + srtCues.map((c) => `${srtTime(c.s, ".")} --> ${srtTime(c.e, ".")}\n${c.text}\n`).join("\n"), "nabra-subtitles.vtt", "text/vtt") : toast("طلّع الترجمة أول.");
 
 // ---------- podcast ----------
 dialectSelect($("#pdDialect"), "ae"); voiceOpts($("#pdA")); voiceOpts($("#pdB")); $("#pdA").value = "hamdan"; $("#pdB").value = "maitha";
@@ -605,7 +605,7 @@ $("#pdScript").onclick = async (ev) => { const b = ev.currentTarget, topic = $("
   catch (e) { toast(errMsg(e.code), true); } finally { b.classList.remove("loading"); } };
 $("#pdAudio").onclick = async (ev) => { const b = ev.currentTarget; b.classList.add("loading"); $(".btxt", b).textContent = "نسجّل الحلقة…";
   try { const va = VOICES.find((v) => v.id === $("#pdA").value).v, vb = VOICES.find((v) => v.id === $("#pdB").value).v; const r = await api("podcast_audio", { lines: pd.lines, dialect: $("#pdDialect").value, va, vb }, 150000);
-    $("#pdOut").replaceChildren(makePlayer({ title: `🎙️ ${$("#pdTitle").textContent}`, wav: audioToWav(r.audio, r.mime), filename: `ramsa-podcast-${Date.now()}.wav`, autoplay: true })); }
+    $("#pdOut").replaceChildren(makePlayer({ title: `🎙️ ${$("#pdTitle").textContent}`, wav: audioToWav(r.audio, r.mime), filename: `nabra-podcast-${Date.now()}.wav`, autoplay: true })); }
   catch (e) { toast(errMsg(e.code), true); } finally { b.classList.remove("loading"); $(".btxt", b).textContent = "حوّله لصوت"; } };
 
 // ---------- voice note ----------
@@ -615,7 +615,7 @@ $("#vnGo").onclick = async (ev) => { const b = ev.currentTarget, text = $("#vnTe
   try { const payload = { tone: $("#vnTone").value, intent: $("#vnIntent").value.trim(), dialect: $("#vnDialect").value, voice: VOICES.find((v) => v.id === $("#vnVoice").value).v };
     if (vnIn.data) { const m16 = await resample(vnIn.data.f32, vnIn.data.sr, 16000); payload.audio = b64wav16(m16); payload.mime = "audio/wav"; } else payload.text = text;
     const r = await api("voicenote", payload, 120000); const box = $("#vnRes"); box.replaceChildren(h("h3", { class: "h3" }, "الرسالة اللي وصلتك"), h("p", { class: "lh", dir: "auto" }, r.heard || text), r.gist ? h("div", { class: "chip sm gold" }, "الخلاصة: " + r.gist) : null, h("h3", { class: "h3", style: "margin-top:14px" }, "ردّك"), h("p", { class: "lh", dir: "auto", style: "font-size:17px;color:var(--ink)" }, r.reply || ""));
-    if (r.tts?.audio) { const wav = audioToWav(r.tts.audio, r.tts.mime); box.append(makePlayer({ title: "فويس الرد", wav, filename: `ramsa-reply-${Date.now()}.wav`, autoplay: true }));
+    if (r.tts?.audio) { const wav = audioToWav(r.tts.audio, r.tts.mime); box.append(makePlayer({ title: "فويس الرد", wav, filename: `nabra-reply-${Date.now()}.wav`, autoplay: true }));
       const file = new File([wav], "reply.wav", { type: "audio/wav" }); if (navigator.canShare?.({ files: [file] })) box.append(h("button", { class: "btn primary", onclick: () => navigator.share({ files: [file], title: "فويس" }).catch(() => {}) }, "شارك في الواتساب"));
       else box.append(h("p", { class: "muted small" }, "نزّل الملف وأرسله في الواتساب كملف صوتي.")); }
     else if (r.tts_error) toast("الرد جاهز نصًا، بس ما قدرنا نولّد الصوت الحين.", true);

@@ -1,4 +1,4 @@
-// Ramsa phone bridge: connects a real phone number (Twilio Programmable Voice webhooks) to the Ramsa AI call-center agent.
+// Nabra phone bridge: connects a real phone number (Twilio Programmable Voice webhooks) to the Nabra AI call-center agent.
 // Twilio → POST ?ws=<workspace>&co=<company record id>[&step=...]. Uses Twilio <Gather> speech recognition (ar-AE / en-US) and Amazon Polly
 // neural voices via <Say> for low latency. Conversation state lives in ramsa_cc_records (kind "phone_turn", ref = CallSid).
 // Optional secret TWILIO_AUTH_TOKEN → every request must carry a valid X-Twilio-Signature.

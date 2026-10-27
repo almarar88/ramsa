@@ -1,4 +1,4 @@
-// Ramsa Call Center: AI phone agent turn, actions (webhooks or demo DB), summaries, campaigns, records.
+// Nabra Call Center: AI phone agent turn, actions (webhooks or demo DB), summaries, campaigns, records.
 const SB_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const T = "ramsa_cc_records";
@@ -114,7 +114,7 @@ function safeUrl(u: string) {
 async function callWebhook(url: string, secret: string, event: string, payload: any) {
   const u = safeUrl(url); if (!u) return { ok: false, error: "invalid_url" };
   const body = JSON.stringify({ event, ...payload, sent_at: new Date().toISOString() });
-  const headers: Record<string, string> = { "content-type": "application/json", "x-ramsa-event": event, "user-agent": "Ramsa-CallCenter/1.0" };
+  const headers: Record<string, string> = { "content-type": "application/json", "x-nabra-event": event, "user-agent": "Nabra-CallCenter/1.0" };
   if (secret) { const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]); const sig = await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(body)); headers["x-ramsa-signature"] = "sha256=" + [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join(""); }
   const t0 = Date.now();
   try {

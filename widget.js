@@ -2,7 +2,7 @@
   var s = document.currentScript; if (!s) return;
   var base = s.src.replace(/widget\.js.*$/, ""), cfg = s.getAttribute("data-agent") || "", label = s.getAttribute("data-label") || "كلّمنا";
   var btn = document.createElement("button"), frame = null, open = false;
-  btn.setAttribute("aria-label", label); btn.innerHTML = '<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-3.1A7 7 0 0 1 5 11z"/></svg>';
+  btn.setAttribute("aria-label", label); btn.innerHTML = '<svg viewBox="12 6 40 46" width="28" height="28" fill="none" stroke="#fff" stroke-linecap="round"><path d="M17 24v7a15 15 0 0 0 30 0v-7" stroke-width="5.5"/><circle cx="32" cy="17" r="4.4" fill="#f2c46d" stroke="none"/><path d="M26 11.5a8 8 0 0 0 0 11M38 11.5a8 8 0 0 1 0 11" stroke="#f2c46d" stroke-width="2.6"/></svg>';
   btn.style.cssText = "position:fixed;bottom:20px;left:20px;z-index:2147483646;width:62px;height:62px;border-radius:50%;border:0;cursor:pointer;background:linear-gradient(135deg,#0d5c57,#0f8a7e);box-shadow:0 10px 30px rgba(15,138,126,.45);display:flex;align-items:center;justify-content:center";
   btn.onclick = function () {
     if (!frame) { frame = document.createElement("iframe"); frame.src = base + "index.html?embed=1#agent?c=" + cfg; frame.allow = "microphone; autoplay"; frame.title = label;

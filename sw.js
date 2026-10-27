@@ -1,5 +1,5 @@
-const C = "ramsa-v8";
-const SHELL = ["./", "index.html", "styles.css?v=4", "app.js?v=7", "cc.js?v=2", "cc.css?v=1", "design.css?v=1", "home.js?v=1", "studio.js?v=1", "scenarios.js?v=1", "manifest.json", "icons/logo.svg", "icons/icon-192.png", "icons/favicon-64.png", "samples/hero.mp3", "widget.js"];
+const C = "nabra-v9";
+const SHELL = ["./", "index.html", "styles.css?v=4", "app.js?v=8", "cc.js?v=3", "cc.css?v=1", "design.css?v=2", "home.js?v=1", "studio.js?v=2", "scenarios.js?v=1", "manifest.json", "icons/logo.svg", "icons/icon-192.png", "icons/favicon-64.png", "icons/logo-dark.svg", "samples/hero.mp3", "widget.js"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(C).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== C).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", (e) => {
