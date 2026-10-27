@@ -10,14 +10,19 @@ const I = { play: "M8 5v14l11-7z", pause: "M6 5h4v14H6zm8 0h4v14h-4z", dl: "M12 
 // ---------- errors & api ----------
 const ERR = {
   rate_limit: "وصلنا الحد المجاني للطلبات حاليًا. انتظر دقيقة وجرّب مرة ثانية.",
+  quran_blocked: "رمسة ما تولّد تلاوة أو قراءة لآيات القرآن الكريم احترامًا لقدسيته. جرّب نصًا آخر.",
   busy: "الخدمة مزدحمة الحين. جرّب بعد لحظات.", timeout: "الطلب أخذ وقت أطول من اللازم. جرّب مرة ثانية.",
   too_long: "المحتوى أطول من المسموح.", empty_text: "اكتب نص أول.", empty_audio: "ما وصلنا صوت واضح. جرّب مرة ثانية.",
   network: "تأكد من اتصالك بالإنترنت وجرّب مرة ثانية.", bad_output: "صار خطأ في معالجة الرد. جرّب مرة ثانية.",
   mic: "ما قدرنا نوصل للمايك. اسمح للمتصفح باستخدامه من إعدادات الموقع.", decode: "ما قدرنا نقرأ الملف. جرّب ملف MP3 أو WAV أو M4A.",
 };
 const errMsg = (code) => ERR[code] || "صار خطأ غير متوقع. جرّب مرة ثانية.";
+// Pronunciation dictionary (local): brand names / terms → how to say them. Applied to text before speech generation.
+function applyPron(t) { const d = (JSON.parse(localStorage.getItem("ramsa.pron") || "[]") || []).filter((x) => x.from && x.to); let o = String(t ?? ""); for (const x of d) o = o.split(x.from).join(x.to); return o; }
 async function api(mode, payload, timeout = 90000) {
   let r;
+  if (mode === "tts" && payload?.text) payload = { ...payload, text: applyPron(payload.text) };
+  if (mode === "podcast_audio" && payload?.lines) payload = { ...payload, lines: payload.lines.map((l) => ({ ...l, text: applyPron(l.text) })) };
   try {
     r = await fetch(API_URL, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode, ...payload }), signal: AbortSignal.timeout(timeout) });
   } catch (e) { throw Object.assign(new Error("network"), { code: e?.name === "TimeoutError" ? "timeout" : "network" }); }
@@ -27,8 +32,9 @@ async function api(mode, payload, timeout = 90000) {
   const outB64 = j.audio || j.tts?.audio; const outSec = outB64 ? (outB64.length * 0.75 - 44) / 48000 : 0;
   track(mode, true, inSec, outSec, payload, "", j); return j;
 }
-const TOOL_AR = { tts: "نطق", tashkeel: "تشكيل", stt: "تفريغ", agent: "الوكيل", translate: "ترجمة", summarize: "ملخص", summarize_text: "ملخص", srt: "SRT", podcast_script: "بودكاست", podcast_audio: "بودكاست", voicenote: "رد فويس", clean: "تنقية" };
+const TOOL_AR = { cc_turn: "مكالمة مركز الاتصال", cc_summary: "ملخص مكالمة", cc_doc: "استخراج مستند", cc_campaign: "محاكاة حملة", tts: "نطق", tashkeel: "تشكيل", stt: "تفريغ", agent: "الوكيل", translate: "ترجمة", summarize: "ملخص", summarize_text: "ملخص", srt: "SRT", podcast_script: "بودكاست", podcast_audio: "بودكاست", voicenote: "رد فويس", clean: "تنقية" };
 function track(mode, ok, inSec, outSec, payload = {}, code = "", res = {}) {
+  if (["cc_list", "cc_update", "cc_company"].includes(mode)) return;
   const u = store.get("usage", []); const note = (payload.text || payload.topic || res.text || res.heard || res.source_text || res.summary || "").toString().replace(/\s+/g, " ").slice(0, 90);
   u.push({ t: Date.now(), m: mode, ok, i: Math.max(0, +inSec.toFixed(1)), o: Math.max(0, +outSec.toFixed(1)), c: (payload.text || "").length, n: note, e: code }); store.set("usage", u.slice(-600));
 }
@@ -101,20 +107,44 @@ async function toWav16kB64(f32, sr) { const r = sr === 16000 ? f32 : await resam
 function meterDraw(cv, hist) { const dpr = devicePixelRatio || 1, w = cv.clientWidth, hh = cv.clientHeight; cv.width = w * dpr; cv.height = hh * dpr; const g = cv.getContext("2d"); g.scale(dpr, dpr); g.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--acc"); const n = hist.length, bw = w / n; hist.forEach((v, i) => { const bh = Math.max(2, Math.min(1, v * 6) * hh); g.globalAlpha = .35 + .65 * (i / n); g.fillRect(w - (i + 1) * bw + 1, (hh - bh) / 2, bw - 2, bh); }); }
 
 // ---------- data ----------
-const DIALECTS = [["ae", "إماراتي"], ["sa", "سعودي"], ["kw", "كويتي"], ["eg", "مصري"], ["msa", "فصحى"], ["en", "English"]];
+const DIALECTS = [["ae", "إماراتي"], ["sa", "سعودي نجدي"], ["hj", "سعودي حجازي"], ["kw", "كويتي"], ["qa", "قطري"], ["bh", "بحريني"], ["om", "عُماني"], ["iq", "عراقي"], ["sy", "سوري"], ["lb", "لبناني"], ["jo", "أردني"], ["ps", "فلسطيني"], ["eg", "مصري"], ["sd", "سوداني"], ["ma", "مغربي"], ["dz", "جزائري"], ["tn", "تونسي"], ["ly", "ليبي"], ["ye", "يمني"], ["msa", "فصحى"], ["en", "English"]];
+const DGROUP = {"ae": "gulf", "sa": "gulf", "hj": "gulf", "kw": "gulf", "qa": "gulf", "bh": "gulf", "om": "gulf", "iq": "iq", "sy": "lev", "lb": "lev", "jo": "lev", "ps": "lev", "eg": "nile", "sd": "nile", "ma": "mag", "dz": "mag", "tn": "mag", "ly": "mag", "ye": "iq", "msa": "std", "en": "std"};
+const REGIONS = [["gulf", "الخليج"], ["iq", "العراق واليمن"], ["lev", "الشام"], ["nile", "مصر والسودان"], ["mag", "المغرب العربي"], ["std", "فصحى وEnglish"]];
+// Verified by generating each dialect and running Ramsa's own dialect detector on it (see README): "weak" = sounds close but not reliably native.
+const DQUAL = {};
 const DNAME = Object.fromEntries(DIALECTS);
+const dialectSelect = (sel, val) => { sel.replaceChildren(...REGIONS.map(([g, gl]) => h("optgroup", { label: gl }, ...DIALECTS.filter(([k]) => DGROUP[k] === g).map(([k, l]) => h("option", { value: k }, l + (DQUAL[k] === "weak" ? " (تجريبي)" : "")))))); if (val) sel.value = val; return sel; };
 const VOICES = [
-  { id: "hamdan", name: "حمدان", v: "Charon", d: "ae", g: "m", desc: "رخيم وواثق", c: "#0d5c57" },
-  { id: "maitha", name: "ميثاء", v: "Kore", d: "ae", g: "f", desc: "دافئ وواضح", c: "#b7791f" },
-  { id: "sultan", name: "سلطان", v: "Orus", d: "ae", g: "m", desc: "رسمي ومتزن", c: "#2b4c7e" },
-  { id: "faisal", name: "فيصل", v: "Fenrir", d: "sa", g: "m", desc: "حيوي ومتحمس", c: "#1b7f5a" },
-  { id: "noura", name: "نورة", v: "Leda", d: "sa", g: "f", desc: "شبابي وناعم", c: "#a3456b" },
-  { id: "bader", name: "بدر", v: "Puck", d: "kw", g: "m", desc: "مرح وخفيف", c: "#7048e8" },
-  { id: "dana", name: "دانة", v: "Aoede", d: "kw", g: "f", desc: "هادئ ولطيف", c: "#c2410c" },
-  { id: "karim", name: "كريم", v: "Iapetus", d: "eg", g: "m", desc: "قريب وودود", c: "#0e7490" },
-  { id: "heba", name: "هبة", v: "Despina", d: "eg", g: "f", desc: "مبتسم وسلس", c: "#be185d" },
-  { id: "james", name: "James", v: "Algieba", d: "en", g: "m", desc: "Clear & natural", c: "#334155" },
-  { id: "emma", name: "Emma", v: "Zephyr", d: "en", g: "f", desc: "Bright & friendly", c: "#9333ea" },
+  {"id": "hamdan", "name": "حمدان", "v": "Charon", "d": "ae", "g": "m", "desc": "رخيم وواثق، مثل مذيع نشرة", "c": "#0d5c57"},
+  {"id": "maitha", "name": "ميثاء", "v": "Kore", "d": "ae", "g": "f", "desc": "دافئ وواضح، مثالي لخدمة العملاء", "c": "#b7791f"},
+  {"id": "sultan", "name": "سلطان", "v": "Orus", "d": "ae", "g": "m", "desc": "رسمي ومتزن", "c": "#2b4c7e"},
+  {"id": "faisal", "name": "فيصل", "v": "Fenrir", "d": "sa", "g": "m", "desc": "حيوي ومتحمس", "c": "#1b7f5a"},
+  {"id": "noura", "name": "نورة", "v": "Leda", "d": "sa", "g": "f", "desc": "شبابي وناعم", "c": "#a3456b"},
+  {"id": "bader", "name": "بدر", "v": "Puck", "d": "kw", "g": "m", "desc": "مرح وخفيف", "c": "#7048e8"},
+  {"id": "dana", "name": "دانة", "v": "Aoede", "d": "kw", "g": "f", "desc": "هادئ ولطيف", "c": "#c2410c"},
+  {"id": "karim", "name": "كريم", "v": "Iapetus", "d": "eg", "g": "m", "desc": "قريب وودود", "c": "#0e7490"},
+  {"id": "heba", "name": "هبة", "v": "Despina", "d": "eg", "g": "f", "desc": "مبتسم وسلس", "c": "#be185d"},
+  {"id": "james", "name": "James", "v": "Algieba", "d": "en", "g": "m", "desc": "Clear & natural", "c": "#334155"},
+  {"id": "emma", "name": "Emma", "v": "Zephyr", "d": "en", "g": "f", "desc": "Bright & friendly", "c": "#9333ea"},
+  {"id": "khalid", "name": "خالد", "v": "Sadaltager", "d": "sa", "g": "m", "desc": "مثقف وهادئ، يشرح بثقة", "c": "#155e75"},
+  {"id": "maryam", "name": "مريم", "v": "Vindemiatrix", "d": "hj", "g": "f", "desc": "لطيف وحنون", "c": "#9d174d"},
+  {"id": "rawda", "name": "روضة", "v": "Callirrhoe", "d": "qa", "g": "f", "desc": "مرتاح وعفوي", "c": "#a16207"},
+  {"id": "jassim", "name": "جاسم", "v": "Enceladus", "d": "bh", "g": "m", "desc": "هامس ودافئ", "c": "#3f6212"},
+  {"id": "lulwa", "name": "لولوة", "v": "Achernar", "d": "bh", "g": "f", "desc": "ناعم وهادئ", "c": "#be123c"},
+  {"id": "shaikha", "name": "شيخة", "v": "Gacrux", "d": "om", "g": "f", "desc": "ناضج ووقور", "c": "#7c2d12"},
+  {"id": "ali", "name": "علي", "v": "Algenib", "d": "iq", "g": "m", "desc": "مبحوح وعميق", "c": "#44403c"},
+  {"id": "yahya", "name": "يحيى", "v": "Rasalgethi", "d": "ye", "g": "m", "desc": "إخباري وواضح", "c": "#1e3a8a"},
+  {"id": "mazen", "name": "مازن", "v": "Zubenelgenubi", "d": "sy", "g": "m", "desc": "عفوي وكاجوال", "c": "#0f766e"},
+  {"id": "lina", "name": "لينا", "v": "Sulafat", "d": "sy", "g": "f", "desc": "دافئ وقريب من القلب", "c": "#c026d3"},
+  {"id": "reem", "name": "ريم", "v": "Autonoe", "d": "lb", "g": "f", "desc": "مشرق ومنطلق", "c": "#db2777"},
+  {"id": "layan", "name": "ليان", "v": "Pulcherrima", "d": "jo", "g": "f", "desc": "جريء ومباشر", "c": "#7e22ce"},
+  {"id": "zaid", "name": "زيد", "v": "Achird", "d": "ps", "g": "m", "desc": "ودود وبشوش", "c": "#047857"},
+  {"id": "othman", "name": "عثمان", "v": "Umbriel", "d": "sd", "g": "m", "desc": "هادئ ومرتاح", "c": "#92400e"},
+  {"id": "yasmine", "name": "ياسمين", "v": "Laomedeia", "d": "ma", "g": "f", "desc": "متفائل وحيوي", "c": "#e11d48"},
+  {"id": "amine", "name": "أمين", "v": "Sadachbia", "d": "dz", "g": "m", "desc": "نشيط ومرح", "c": "#0369a1"},
+  {"id": "salma", "name": "سلمى", "v": "Erinome", "d": "tn", "g": "f", "desc": "واضح ونقي", "c": "#6d28d9"},
+  {"id": "omar", "name": "عمر", "v": "Alnilam", "d": "ly", "g": "m", "desc": "حازم وثابت", "c": "#1f2937"},
+  {"id": "adel", "name": "عادل", "v": "Schedar", "d": "msa", "g": "m", "desc": "متوازن، للفصحى والكتب الصوتية", "c": "#365314"}
 ];
 const SAMPLE_TEXT = {
   ae: "هلا والله، شو هالخبر الحلو؟ [chuckle] والله فرحت يوم سمعت السالفة، بس لحظة [clears throat] خلني أقولك التفاصيل بهدوء.",
@@ -123,6 +153,21 @@ const SAMPLE_TEXT = {
   eg: "أهلًا أهلًا! [laughs] إيه الأخبار الحلوة دي؟ بجد فرحتني، استنى بس أحكيلك الحكاية من الأول.",
   msa: "مرحبًا بكم في رمسة، المنصة التي تحوّل النص العربي إلى صوت طبيعي واضح، بلهجات متعددة وبجودة عالية.",
   en: "Welcome to Ramsa! [chuckle] Type anything, pick a voice, and hear it come to life in seconds.",
+  hj: "أهلين، إيش أخبارك؟ والله أبغى أقولك حاجة، دحين الزحمة مرة كتير، خلينا نتقابل بكرة العصر إن شاء الله.",
+  qa: "هلا والله، شلونك؟ يبا أقولك شي، الحين الزحمة وايد، خلنا نتلاقى باجر العصر إن شاء الله.",
+  bh: "هلا والله، شلونك؟ شنو أخبارك؟ الحين الزحمة وايد، خلنا نتلاقى باجر العصر إن شاء الله.",
+  om: "هلا والله، كيف حالك؟ أبا أقولك شي، الحين الزحمة وايد، خلنا نتلاقى باكر العصر إن شاء الله.",
+  iq: "هلو عيني، شلونك؟ أريد أكلك شغلة، هسة الزحمة هواية، خلي نتلاكى باچر العصر إن شاء الله.",
+  sy: "مرحبا، كيفك؟ بدي قلك شغلة، هلق في عجقة كتير، خلينا نشوف بعض بكرا العصر إن شاء الله.",
+  lb: "هاي، كيفك؟ بدي قلك شي، هلق في عجقة سير كتير، خلينا نتلاقى بكرا بعد الضهر إن شاء الله.",
+  jo: "مرحبا، كيفك؟ بدي أحكيلك إشي، هسا في أزمة كثير، خلينا نلتقي بكرا العصر إن شاء الله.",
+  ps: "مرحبا، كيفك؟ بدي أحكيلك إشي، هلأ في أزمة كتير، خلينا نتلاقى بكرا العصر إن شاء الله.",
+  sd: "سلام يا زول، كيفنك؟ داير أكلمك في حاجة، هسي الزحمة شديد، خلينا نتلاقى بكرة العصر إن شاء الله.",
+  ma: "السلام، كيداير؟ بغيت نقولك شي حاجة، دابا كاين الزحام بزاف، نتلاقاو غدا العشية إن شاء الله.",
+  dz: "السلام، واش راك؟ حبيت نقولك حاجة، درك كاين الزحمة بزاف، نتلاقاو غدوة العشية إن شاء الله.",
+  tn: "عسلامة، شنحوالك؟ نحب نقلك حاجة، توا الزحمة برشا، نتلاقاو غدوة العشية إن شاء الله.",
+  ly: "السلام، شن حالك؟ نبي نقولك حاجة، توا الزحمة واجد، خلينا نتلاقوا غدوة العصر إن شاء الله.",
+  ye: "أهلين، كيف حالك؟ اشتي أقل لك حاجة، ذلحين الزحمة قوية، خلينا نتلاقى بكرة العصر إن شاء الله.",
 };
 const TAGS = ["[chuckle]", "[laughs]", "[sigh]", "[whispers]", "[clears throat]", "[excited]", "[pause]"];
 const favs = new Set(store.get("favs", []));
@@ -141,15 +186,17 @@ function toggleFav(id) { favs.has(id) ? favs.delete(id) : favs.add(id); store.se
 
 // ---------- router ----------
 I.more = "M5 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm7 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm7 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4z";
-const ROUTES = [["home", "الرئيسية", I.home], ["agent", "رفيج", I.mic], ["tts", "نطق", I.tts], ["stt", "تفريغ", I.stt], ["clean", "تنقية", I.clean], ["more", "المزيد", I.more], ["voices", "الأصوات"], ["translate", "ترجمة فورية"], ["meeting", "ملخص الاجتماعات"], ["srt", "ترجمة SRT"], ["podcast", "بودكاست"], ["voicenote", "رد الفويس"], ["builder", "صانع الوكلاء"], ["dashboard", "الاستخدام"]];
-const MORE_OF = ["voices", "translate", "meeting", "srt", "podcast", "voicenote", "builder", "dashboard", "clean"];
-$("#topnav").append(...ROUTES.slice(0, 6).map(([id, label]) => h("a", { href: "#" + id, "data-r": id }, label)));
-$("#tabbar").append(...ROUTES.slice(0, 6).filter((r) => r[0] !== "clean").map(([id, label, d]) => h("a", { href: "#" + id, "data-r": id }, ico(d), label)));
+const ROUTES = [["home", "الرئيسية", I.home], ["cc", "مركز الاتصال", "M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"], ["agent", "رفيج", I.mic], ["tts", "نطق", I.tts], ["stt", "تفريغ", I.stt], ["clean", "تنقية", I.clean], ["more", "المزيد", I.more], ["voices", "الأصوات"], ["translate", "ترجمة فورية"], ["meeting", "ملخص الاجتماعات"], ["srt", "ترجمة SRT"], ["podcast", "بودكاست"], ["voicenote", "رد الفويس"], ["builder", "صانع الوكلاء"], ["dashboard", "الاستخدام"], ["ccsetup", "إعداد الشركة"], ["cccall", "محاكي المكالمات"], ["ccout", "الحملات الصادرة"]];
+ROUTES.push(["ccdemo", "جرّب مكالمة"], ["studio", "استوديو الكتب الصوتية"], ["dub", "دبلجة الفيديو"], ["advo", "إعلانات وريلز"], ["pron", "قاموس النطق"], ["api", "للمطورين"], ["projects", "مشاريعي"]);
+const CC_OF = ["ccsetup", "cccall", "ccout", "ccdemo"];
+const MORE_OF = ["voices", "translate", "meeting", "srt", "podcast", "voicenote", "builder", "dashboard", "clean", "studio", "dub", "advo", "pron", "api", "projects"];
+$("#topnav").append(...ROUTES.slice(0, 7).map(([id, label]) => h("a", { href: "#" + id, "data-r": id }, label)));
+$("#tabbar").append(...ROUTES.slice(0, 7).filter((r) => !["clean", "stt"].includes(r[0])).map(([id, label, d]) => h("a", { href: "#" + id, "data-r": id }, ico(d), label)));
 function route() {
   const id = (location.hash.slice(1) || "home").split("?")[0]; const ok = ROUTES.some((r) => r[0] === id) ? id : "home";
-  $$(".view").forEach((v) => (v.hidden = v.id !== "v-" + ok)); $$("[data-r]").forEach((a) => a.classList.toggle("on", a.dataset.r === ok || (a.dataset.r === "more" && MORE_OF.includes(ok) && !(a.closest("#topnav") && ok === "clean"))));
+  $$(".view").forEach((v) => (v.hidden = v.id !== "v-" + ok)); $$("[data-r]").forEach((a) => a.classList.toggle("on", a.dataset.r === ok || (a.dataset.r === "cc" && CC_OF.includes(ok)) || (a.dataset.r === "more" && MORE_OF.includes(ok) && !(a.closest("#topnav") && ok === "clean"))));
   if (ok === "agent") applyAgentCfgFromHash(); if (ok === "dashboard") renderDash(); if (ok !== "translate" && tr.rec) tr.stop();
-  if (ok !== "agent" && call.on) endCall(); if (ok !== "stt" && stt.rec) stopStt();
+  if (ok !== "agent" && call.on) endCall(); window.__cc?.route(ok); window.__studio?.route(ok); if (ok !== "stt" && stt.rec) stopStt();
   window.scrollTo({ top: 0 }); document.title = ok === "home" ? "رمسة — منصة الصوت العربي بلهجتك" : `${ROUTES.find((r) => r[0] === ok)[1]} · رمسة`;
 }
 addEventListener("hashchange", route);
@@ -174,9 +221,9 @@ function renderHomeVoices() { $("#homeVoices").replaceChildren(...VOICES.map(vca
 // ---------- voices ----------
 let vFilter = "all";
 function renderVoices() {
-  const F = [["all", "الكل"], ["fav", "المفضلة ♥"], ...DIALECTS.filter((d) => d[0] !== "msa")];
+  const F = [["all", `الكل (${VOICES.length})`], ["fav", "المفضلة ♥"], ["m", "رجالي"], ["f", "نسائي"], ...REGIONS];
   $("#voiceFilter").replaceChildren(...F.map(([k, l]) => h("button", { class: "chip" + (vFilter === k ? " on" : ""), onclick: () => { vFilter = k; renderVoices(); } }, l)));
-  const list = VOICES.filter((v) => vFilter === "all" || (vFilter === "fav" ? favs.has(v.id) : v.d === vFilter));
+  const list = VOICES.filter((v) => vFilter === "all" || (vFilter === "fav" ? favs.has(v.id) : vFilter === "m" || vFilter === "f" ? v.g === vFilter : DGROUP[v.d] === vFilter));
   $("#voiceGrid").replaceChildren(...(list.length ? list.map(vcard) : [h("div", { class: "empty", style: "grid-column:1/-1" }, "ما عندك أصوات مفضلة بعد. اضغط ♥ على أي صوت.")]));
 }
 
@@ -187,7 +234,9 @@ const ta = $("#ttsText");
 const isDefaultText = () => !ta.value.trim() || Object.values(SAMPLE_TEXT).includes(ta.value.trim());
 ta.value = SAMPLE_TEXT[tts.dialect];
 function renderTts() {
-  $("#ttsDialect").replaceChildren(...DIALECTS.map(([k, l]) => h("button", { class: tts.dialect === k ? "on" : "", onclick: () => { tts.dialect = k; if (isDefaultText()) ta.value = SAMPLE_TEXT[k]; const cur = VOICES.find((v) => v.id === tts.voice); if (k !== "msa" && cur.d !== k) tts.voice = VOICES.find((v) => v.d === k).id; renderTts(); } }, l)));
+  const QUICK = ["ae", "sa", "kw", "eg", "sy", "ma", "msa", "en"]; const dsel = dialectSelect(h("select", { class: "dsel", "aria-label": "اللهجة" }), tts.dialect);
+  dsel.onchange = () => { tts.dialect = dsel.value; if (isDefaultText()) ta.value = SAMPLE_TEXT[tts.dialect]; renderTts(); };
+  $("#ttsDialect").replaceChildren(...QUICK.map((k) => h("button", { class: tts.dialect === k ? "on" : "", onclick: () => { tts.dialect = k; if (isDefaultText()) ta.value = SAMPLE_TEXT[k]; renderTts(); } }, DNAME[k])), dsel);
   ta.dir = tts.dialect === "en" ? "ltr" : "rtl"; $("#ttsCount").textContent = `${ta.value.length} / 1500`; renderPick();
 }
 function renderPick() {
@@ -476,10 +525,10 @@ const voiceOpts = (sel, list = VOICES) => { sel.replaceChildren(...list.map((v) 
 const dlText = (text, name, type = "text/plain") => h("a", { href: URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" })), download: name }).click();
 
 // ---------- hub ----------
-const HUB = [["translate", "ترجمة فورية بالصوت", "بين اللهجات العربية والإنجليزية، لطرفين يتكلمون مباشرة.", "f-stt", I.mic], ["meeting", "ملخص الاجتماعات", "نص بأسماء المتحدثين، ملخص، مهام وقرارات.", "f-agent", I.stt],
+const HUB = [["studio", "استوديو الكتب الصوتية", "فصول، شخصيات بأصوات مختلفة، وقفات وتأكيد، وتصدير WAV.", "f-tts", I.tts], ["dub", "دبلجة الفيديو", "فرّغ، ترجم، ودبلج بصوت جديد مع ملف ترجمة.", "f-clean", I.voices], ["advo", "إعلانات وريلز", "تعليق صوتي مع موسيقى تنخفض تلقائيًا تحت الصوت.", "f-agent", I.mic],["translate", "ترجمة فورية بالصوت", "بين اللهجات العربية والإنجليزية، لطرفين يتكلمون مباشرة.", "f-stt", I.mic], ["meeting", "ملخص الاجتماعات", "نص بأسماء المتحدثين، ملخص، مهام وقرارات.", "f-agent", I.stt],
   ["srt", "ترجمة الفيديو SRT", "ملف ترجمة بالتوقيت من أي صوت أو فيديو، عربي أو إنجليزي.", "f-clean", I.stt], ["podcast", "صانع البودكاست", "حوار بصوتين عن أي موضوع، بلهجتك.", "f-tts", I.tts],
   ["voicenote", "رد على الفويس", "سوّ فويس رد للواتساب بصوت طبيعي ولهجتك.", "f-agent", I.mic], ["builder", "صانع الوكلاء", "وكيل صوتي لنشاطك برابط تجربة وكود تضمين.", "f-tts", I.voices],
-  ["clean", "تنقية الصوت", "شيل الضوضاء من تسجيلاتك على جهازك.", "f-clean", I.clean], ["voices", "مكتبة الأصوات", "اسمع العيّنات واحفظ المفضل.", "f-stt", I.voices], ["dashboard", "الاستخدام والسجل", "إحصاءاتك وسجل طلباتك على هذا الجهاز.", "f-agent", I.stt]];
+  ["clean", "تنقية الصوت", "شيل الضوضاء من تسجيلاتك على جهازك.", "f-clean", I.clean], ["voices", "مكتبة الأصوات", "اسمع العيّنات واحفظ المفضل.", "f-stt", I.voices], ["dashboard", "الاستخدام والسجل", "إحصاءاتك وسجل طلباتك على هذا الجهاز.", "f-agent", I.stt], ["pron", "قاموس النطق", "علّم رمسة تنطق أسماء علامتك ومصطلحاتك صح.", "f-stt", I.tts], ["api", "للمطورين", "توثيق، تجربة مباشرة، وكود ودجت للتضمين.", "f-clean", I.stt], ["projects", "مشاريعي", "صدّر واستورد كل شغلك المحفوظ على هذا الجهاز.", "f-agent", I.voices]];
 const hubCard = ([id, t, d, c, ic]) => h("a", { class: "card", href: "#" + id }, h("div", { class: "ficon " + c }, ico(ic)), h("div", {}, h("h3", {}, t), h("p", {}, d)));
 $("#hub").append(...HUB.map(hubCard)); $("#homeHub").append(...HUB.slice(0, 6).map(hubCard));
 
@@ -546,7 +595,7 @@ $("#srtDlEn").onclick = () => srtCues.length && dlText(buildSrt("en"), "ramsa-su
 $("#srtVtt").onclick = () => srtCues.length ? dlText("WEBVTT\n\n" + srtCues.map((c) => `${srtTime(c.s, ".")} --> ${srtTime(c.e, ".")}\n${c.text}\n`).join("\n"), "ramsa-subtitles.vtt", "text/vtt") : toast("طلّع الترجمة أول.");
 
 // ---------- podcast ----------
-$("#pdDialect").replaceChildren(...DIALECTS.map(([k, l]) => h("option", { value: k }, l))); voiceOpts($("#pdA")); voiceOpts($("#pdB")); $("#pdA").value = "hamdan"; $("#pdB").value = "maitha";
+dialectSelect($("#pdDialect"), "ae"); voiceOpts($("#pdA")); voiceOpts($("#pdB")); $("#pdA").value = "hamdan"; $("#pdB").value = "maitha";
 $("#pdDialect").onchange = (e) => { const d = e.target.value; const vs = VOICES.filter((v) => v.d === d); if (vs.length) { $("#pdA").value = (vs.find((v) => v.g === "m") || vs[0]).id; $("#pdB").value = (vs.find((v) => v.g === "f") || vs[1] || vs[0]).id; } };
 let pd = { lines: [] };
 const vName = (id) => VOICES.find((v) => v.id === id)?.name || id;
@@ -560,7 +609,7 @@ $("#pdAudio").onclick = async (ev) => { const b = ev.currentTarget; b.classList.
   catch (e) { toast(errMsg(e.code), true); } finally { b.classList.remove("loading"); $(".btxt", b).textContent = "حوّله لصوت"; } };
 
 // ---------- voice note ----------
-$("#vnDialect").append(...DIALECTS.map(([k, l]) => h("option", { value: k }, l))); voiceOpts($("#vnVoice")); $("#vnVoice").value = "hamdan";
+{ const keep = [...$("#vnDialect").options].filter((o) => !o.value || o.value === "auto"); dialectSelect($("#vnDialect")); $("#vnDialect").prepend(...keep); $("#vnDialect").value = keep[0]?.value ?? "ae"; } voiceOpts($("#vnVoice")); $("#vnVoice").value = "hamdan";
 const vnIn = audioInput($("#vnIn"), { max: 120, btn: "", onGo: async () => {} }); $("#vnIn .btn.primary").remove();
 $("#vnGo").onclick = async (ev) => { const b = ev.currentTarget, text = $("#vnText").value.trim(); if (!vnIn.data && !text) return toast("سجّل أو ارفع الفويس، أو الصق نص الرسالة.", true); b.classList.add("loading");
   try { const payload = { tone: $("#vnTone").value, intent: $("#vnIntent").value.trim(), dialect: $("#vnDialect").value, voice: VOICES.find((v) => v.id === $("#vnVoice").value).v };
@@ -624,4 +673,4 @@ $("#dbClear").onclick = () => { if (confirm("تبي تمسح سجل الاستخ
 renderHomeVoices(); renderVoices(); renderTts(); renderState(); setPhase("idle"); route();
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 if (new URLSearchParams(location.search).get("embed") === "1") document.body.classList.add("embed");
-window.__ramsa = { call, stt, tts, cl, tr };
+window.__ramsa = { call, stt, tts, cl, tr, lib: { DIALECTS, DGROUP, REGIONS, DQUAL, DNAME, dialectSelect, SAMPLE_TEXT, vcard, applyPron, h, $, $$, ico, I, api, toast, errMsg, store, Mic, concat, resample, encodeWav, audioToWav, decodeFile, makePlayer, fmtT, rmsOf, VOICES, AGENT_VOICES, DIALECT_AR, track, dlText, bindDrop, b64ToBytes, bytesToB64, actx, toMono, playSample, unlockAudio, API_URL, route } };

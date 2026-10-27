@@ -16,6 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="cc.css?v=1">
+<link rel="stylesheet" href="design.css?v=1">
 </head>
 <body>
 <header class="topbar">
@@ -27,41 +29,77 @@
 
 <!-- HOME -->
 <section class="view" id="v-home">
-  <div class="hero">
-    <div class="eyebrow"><span class="dot"></span>منصة الصوت العربي · صُنعت في الإمارات</div>
-    <h1>نفهم <em>رمستك</em>،<br>ونرد عليك بلهجتك.</h1>
-    <p class="lead">نطق طبيعي بالإماراتي والسعودي والكويتي والمصري والإنجليزي، تفريغ صوتي يعرف لهجتك، تنقية للتسجيلات، ووكيل صوتي اسمه «رفيج» تكلّمه ويرد عليك ويخلّص طلبك.</p>
-    <div class="cta"><a class="btn primary lg" href="#agent">كلّم رفيج الحين</a><a class="btn ghost lg" href="#tts">جرّب تحويل النص إلى صوت</a></div>
-    <div class="hero-demo card glass">
-      <button class="play-round" id="heroPlay" aria-label="تشغيل"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-      <div class="hd-body">
-        <div class="hd-meta"><span class="chip sm">حمدان · إماراتي</span><span class="muted">مثال مُولَّد بالمنصة</span></div>
-        <p class="hd-text">هلا والله وغلا! <span class="tag">[chuckle]</span> هذي رمسة، تسمع كلامك وترد عليك بلهجتك. جرّبها الحين، وبتشوف الفرق بنفسك.</p>
-        <canvas class="wave" id="heroWave" height="40"></canvas>
-      </div>
+  <div class="hero2">
+    <div class="hero-bg" aria-hidden="true"><canvas id="heroOrb"></canvas></div>
+    <div class="hero-copy reveal">
+      <div class="eyebrow"><span class="dot"></span>منصة الصوت العربي · صُنعت في الإمارات</div>
+      <h1>صوتك العربي.<br><em>بكل لهجة.</em></h1>
+      <p class="lead">٣٠ صوتًا و٢١ لهجة، من الإماراتي إلى المغربي. نطق طبيعي، تفريغ يعرف لهجتك، موظف خدمة عملاء يرد على الهاتف، استوديو للكتب الصوتية، ودبلجة للفيديو. كلها في مكان واحد.</p>
+      <div class="cta"><a class="btn primary lg" href="#ccdemo">جرّب مكالمة خدمة عملاء</a><a class="btn ghost lg" href="#studio">افتح الاستوديو</a></div>
+    </div>
+    <div class="live-demo card reveal" id="liveDemo">
+      <div class="ld-top"><span class="ld-dot"></span><b>جرّبها الحين</b><span class="muted small">اكتب واسمع فورًا</span></div>
+      <textarea id="ldText" rows="3" maxlength="300" dir="auto">هلا والله! أنا ميثاء من رمسة، أقدر أقرأ أي نص تكتبه بلهجتك. جرّب تكتب شي الحين.</textarea>
+      <div class="ld-row"><select id="ldDialect" aria-label="اللهجة"></select><select id="ldVoice" aria-label="الصوت"></select>
+        <button class="btn primary ld-go" id="ldGo"><span class="btxt">اسمعها</span><span class="spin"></span></button></div>
+      <div class="ld-wave"><canvas id="ldWave" height="56"></canvas></div>
+      <div class="ld-foot muted small"><button class="link-btn" id="heroPlay" aria-label="تشغيل مثال جاهز">▶ أو اسمع مثال جاهز</button><canvas class="wave" id="heroWave" height="1" hidden></canvas><span>بدون حساب · مجاني للتجربة</span></div>
     </div>
   </div>
-  <div class="section-title"><h2>أربع أدوات. مكان واحد.</h2><p>بدون حساب، مجانًا للتجربة.</p></div>
-  <div class="features">
-    <a class="feature card" href="#agent"><div class="ficon f-agent"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zm-7 8h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-3.1A7 7 0 0 1 5 11z"/></svg></div><h3>رفيج · الوكيل الصوتي</h3><p>كلّمه بالمايك، يفهم لهجتك، يرد بصوت، ويعرض لك النص والنية والإجراء لحظة بلحظة.</p><span class="go">افتح ←</span></a>
-    <a class="feature card" href="#tts"><div class="ficon f-tts"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg></div><h3>النص إلى صوت</h3><p>اكتب، اختر اللهجة والصوت، أضف تشكيل تلقائي ووسوم تعبيرية مثل [chuckle]، ونزّل WAV.</p><span class="go">افتح ←</span></a>
-    <a class="feature card" href="#stt"><div class="ficon f-stt"><svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 4h10v2H4zm0 4h16v2H4zm0 4h10v2H4z"/></svg></div><h3>الصوت إلى نص</h3><p>تفريغ مباشر من المايك أو من ملف، بلهجة المتكلم كما هي، مع كشف اللهجة وترجمة إنجليزية.</p><span class="go">افتح ←</span></a>
-    <a class="feature card" href="#clean"><div class="ficon f-clean"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4v2h-3l-3 3-1.6-4L10 22 7 10l-1 2H3z"/></svg></div><h3>تنقية الصوت</h3><p>إزالة الضوضاء من تسجيلاتك على جهازك مباشرة بتقنية RNNoise، بدون رفع الملف لأي خادم.</p><span class="go">افتح ←</span></a>
+
+  <div class="stat-band reveal" aria-label="أرقام المنصة">
+    <div><b data-count="30">30</b><span>صوت جاهز</span></div><div><b data-count="21">21</b><span>لهجة ولغة</span></div><div><b data-count="15">15</b><span>أداة صوتية</span></div><div><b>0</b><span>تسجيل دخول مطلوب</span></div>
   </div>
-  <div class="section-title"><h2>وأكثر بوايد.</h2><p>ترجمة فورية، ملخص اجتماعات، ترجمات SRT، بودكاست بصوتين، ردود فويس، وصانع وكلاء لنشاطك.</p></div>
-  <div class="hub" id="homeHub"></div>
-  <div class="section-title"><h2>مكتبة الأصوات</h2><p>اسمع، احفظ المفضل، واستخدمه بضغطة.</p></div>
+
+  <div class="section-title reveal"><span class="kicker">المنتجات</span><h2>منصة كاملة للصوت العربي.</h2><p>من مكالمة عميل واحدة إلى كتاب صوتي كامل.</p></div>
+  <div class="products">
+    <a class="product big reveal" href="#cc"><div class="p-ico f-agent">☎</div><h3>مركز الاتصال الذكي</h3><p>موظف آلي بصوت إماراتي يرد على عملائك، يحجز ويفتح تذاكر ويستعلم عن الطلبات، يحوّل لموظف بشري، ويعطيك لوحة تحليلات كاملة.</p><span class="more">ابدأ الإعداد ←</span><div class="p-vis pv-call"><i></i><i></i><i></i><i></i><i></i></div></a>
+    <a class="product reveal" href="#studio"><div class="p-ico f-tts">📖</div><h3>استوديو الكتب الصوتية</h3><p>فصول، شخصيات بأصوات مختلفة، وقفات وتأكيد، وتصدير جاهز للنشر.</p><span class="more">افتح الاستوديو ←</span></a>
+    <a class="product reveal" href="#dub"><div class="p-ico f-stt">🎬</div><h3>دبلجة الفيديو</h3><p>ارفع فيديو، نفرّغه ونترجمه وندبلجه بلهجة ثانية، مع ملف ترجمة.</p><span class="more">دبلج فيديو ←</span></a>
+    <a class="product reveal" href="#advo"><div class="p-ico f-clean">📣</div><h3>إعلانات وريلز</h3><p>تعليق صوتي إعلاني مع موسيقى خلفية تنخفض تلقائيًا تحت الصوت.</p><span class="more">اصنع إعلان ←</span></a>
+    <a class="product reveal" href="#tts"><div class="p-ico f-tts">🔊</div><h3>النص إلى صوت</h3><p>اختر الصوت واللهجة والنبرة والمشاعر، مع قاموس نطق لأسماء علامتك.</p><span class="more">جرّب ←</span></a>
+    <a class="product reveal" href="#agent"><div class="p-ico f-agent">🎙</div><h3>رفيج · الوكيل الصوتي</h3><p>كلّمه بصوتك، يقاطعك ويفهمك ويخلّص طلبك.</p><span class="more">كلّمه ←</span></a>
+  </div>
+
+  <div class="section-title reveal"><span class="kicker">اللهجات</span><h2>من الخليج إلى المحيط.</h2><p>اختر منطقة واسمع. كل عيّنة مولّدة بالمنصة نفسها.</p></div>
+  <div class="dmap card reveal" id="dmap"></div>
+
+  <div class="section-title reveal"><span class="kicker">الأصوات</span><h2>٣٠ صوتًا، لكل واحد شخصيته.</h2><p>أي صوت يقدر يتكلم أي لهجة. اسمع، احفظ المفضل، واستخدمه بضغطة.</p></div>
   <div class="voice-strip" id="homeVoices"></div>
-  <div class="card privacy">
-    <h3>بصراحة، كيف تشتغل؟</h3>
-    <ul>
-      <li>النطق والتفريغ والوكيل تعتمد على نماذج Google Gemini عبر خادم وسيط آمن؛ مفتاح الخدمة ما ينكشف في المتصفح.</li>
-      <li>تنقية الصوت تتم بالكامل على جهازك، والملف ما يطلع منه.</li>
-      <li>الإجراءات في رفيج (تغيير موعد، إشعار…) تجريبية على طلب وهمي، وقاعدة المعرفة تقدر تعدّلها بنفسك.</li>
-      <li>النسخة المجانية لها حد للطلبات؛ إذا وصلت الحد بنبلغك وتقدر تعيد بعد لحظات.</li>
-    </ul>
+  <div class="center-col"><a class="btn soft" href="#voices">كل الأصوات ←</a></div>
+
+  <div class="cc-show reveal">
+    <div class="cs-copy"><span class="kicker">خدمة العملاء</span><h2>موظف يرد ٢٤ ساعة. بلهجة عميلك.</h2>
+      <ul class="ticks"><li>يفهم كل اللهجات ويرد بالإماراتي، ويتحول للإنجليزي إذا العميل تكلم إنجليزي</li><li>تقدر تقاطعه وهو يتكلم، مثل المكالمة الحقيقية</li><li>حجوزات وتذاكر وحالة الطلبات عبر Webhooks لنظامك</li><li>لوحة تحليلات: المشاعر، أسباب الاتصال، نسبة الحل، ساعات الذروة</li></ul>
+      <div class="cta"><a class="btn primary" href="#ccdemo">جرّب مكالمة جاهزة</a><a class="btn ghost" href="#ccsetup">جهّز شركتك</a></div></div>
+    <div class="cs-phone" aria-hidden="true"><div class="mini-phone"><div class="mp-head"><b>عيادة ابتسامة الخليج</b><small class="ltr">00:42</small></div>
+      <div class="mp-msg u">السلام عليكم، أبا أحجز موعد تنظيف باجر</div><div class="mp-msg a">وعليكم السلام! حياك الله. باجر عندنا الساعة خمس العصر أو سبع المسا، أي وقت يناسبك؟</div><div class="mp-msg u">خمس زين</div><div class="mp-msg a">تم الحجز ✓ رقم المرجع BK-4821، وبيوصلك تأكيد على الواتساب.</div>
+      <div class="mp-tags"><span>حجز موعد</span><span>😊 إيجابي</span><span>إماراتي</span></div></div></div>
   </div>
-  <footer class="foot">رمسة · نسخة تجريبية · <span id="year"></span></footer>
+
+  <div class="section-title reveal"><span class="kicker">حالات الاستخدام</span><h2>لكل قطاع صوته.</h2></div>
+  <div class="industries">
+    <div class="ind reveal"><b>🏥 العيادات</b><p>حجز ومواعيد وتذكير آلي، ورد على أسئلة التأمين.</p></div>
+    <div class="ind reveal"><b>🛍 التجارة الإلكترونية</b><p>حالة الطلب والاسترجاع، وإشعارات واتساب.</p></div>
+    <div class="ind reveal"><b>🏢 العقارات</b><p>استقبال الاستفسارات وحجز المعاينات وتأهيل العملاء.</p></div>
+    <div class="ind reveal"><b>📚 النشر</b><p>كتب صوتية بأصوات عربية وشخصيات متعددة، وتصدير للنشر.</p></div>
+    <div class="ind reveal"><b>🏛 الجهات الحكومية</b><p>مساعد صوتي للخدمات بالعربي والإنجليزي، بلهجة المتعامل.</p></div>
+    <div class="ind reveal"><b>🎬 صنّاع المحتوى</b><p>دبلجة فيديوهاتك وتعليق صوتي للريلز والإعلانات.</p></div>
+  </div>
+
+  <div class="section-title reveal"><span class="kicker">أسئلة شائعة</span><h2>بصراحة.</h2></div>
+  <div class="faq reveal">
+    <details><summary>هل الأصوات حقيقية أو مولّدة؟</summary><p>كل الأصوات مولّدة بالذكاء الاصطناعي (Google Gemini) عبر خادم وسيط آمن؛ المفتاح ما ينكشف في المتصفح. ما نستنسخ صوت أي شخص.</p></details>
+    <details><summary>كل اللهجات بنفس الجودة؟</summary><p>لا. الخليجية والمصرية والشامية والفصحى الأقوى. بعض اللهجات (مثل المغاربية والسودانية) مكتوب جنبها «تجريبي» لأن النطق قريب لكن مو دائمًا أصلي. اختبرنا كل لهجة بمكتشف اللهجات حقنا، والنتائج في صفحة المشروع.</p></details>
+    <details><summary>أقدر أربط رقم هاتف حقيقي؟</summary><p>الجسر جاهز على الخادم (Twilio). تحتاج حساب Twilio ورقم، والأرقام الإماراتية لها اشتراطات من هيئة TDRA. التفاصيل والتكاليف في دليل الربط.</p></details>
+    <details><summary>وين تنحفظ بياناتي؟</summary><p>المشاريع والإعدادات والتسجيلات على جهازك (المتصفح). سجلات مركز الاتصال تنحفظ في قاعدة بيانات تجريبية مرتبطة بمعرّف عشوائي لجهازك.</p></details>
+    <details><summary>تقرأ القرآن الكريم؟</summary><p>لا. احترامًا لقدسية القرآن، رمسة ما تولّد تلاوة أو قراءة للآيات.</p></details>
+    <details><summary>كم السرعة؟</summary><p>النسخة المجانية تعتمد على حصة مجانية؛ الرد عادةً خلال ثوانٍ، لكن أحيانًا يتأخر أو نوصل الحد ونطلب منك تعيد بعد دقيقة.</p></details>
+  </div>
+
+  <div class="final-cta reveal"><h2>جاهز تسمع الفرق؟</h2><p>بدون حساب، ابدأ في ثواني.</p><div class="cta"><a class="btn primary lg" href="#tts">ابدأ مجانًا</a><a class="btn ghost lg" href="#api">للمطوّرين</a></div></div>
+  <div class="hub" id="homeHub" hidden></div>
+  <footer class="foot">رمسة · نسخة تجريبية · <span id="year"></span> · <a href="#api">API</a> · <a href="#projects">مشاريعي</a></footer>
 </section>
 
 <!-- TTS -->
@@ -303,10 +341,52 @@
   <div class="card pad" style="margin-top:18px"><div class="row between"><h3 class="h3">السجل</h3><button class="btn sm soft" id="dbClear">مسح السجل</button></div><div id="dbHist" class="hist"></div></div>
 </section>
 
+<!-- CALL CENTER -->
+<section class="view" id="v-cc" hidden>
+  <div class="page-head cc-head"><div><span class="eyebrow"><span class="live-dot"></span> مركز الاتصال الذكي</span><h1>موظف خدمة عملاء بصوت إماراتي، 24 ساعة.</h1><p>يرد على مكالمات شركتك، يفهم كل اللهجات، يحجز ويفتح تذاكر ويستعلم عن الطلبات، ويحوّل للموظف لما يلزم.</p></div>
+    <div class="row wrap gap cc-head-btns"><a class="btn primary" href="#ccdemo">📞 جرّب مكالمة جاهزة</a><a class="btn soft" href="#cccall">مكالمة لشركتي</a><a class="btn soft" href="#ccsetup">⚙️ إعداد الشركة</a><a class="btn soft" href="#ccout">📣 الحملات الصادرة</a></div></div>
+  <div id="ccCompany"></div>
+  <div class="row between wrap gap cc-toolbar"><div class="seg" id="ccTabs"></div><div class="row gap wrap"><label class="check small"><input type="checkbox" id="ccDemo"> عرض بيانات تجريبية</label><button class="btn sm soft" id="ccRefresh">تحديث</button><button class="btn sm soft" id="ccCsv">تصدير CSV</button></div></div>
+  <div id="ccBody"></div>
+</section>
+<section class="view" id="v-ccsetup" hidden>
+  <div class="page-head"><h1>إعداد شركتك</h1><p>عرّف الموظف الآلي على نشاطك خطوة بخطوة. كل شي ينحفظ تلقائيًا على جهازك.</p></div>
+  <div class="wiz-steps" id="wzSteps"></div>
+  <div class="card pad wiz" id="wzBody"></div>
+  <div class="row between wiz-nav"><button class="btn soft" id="wzPrev">السابق</button><div class="row gap"><button class="btn ghost sm" id="wzSample">عبّي مثال جاهز</button><button class="btn primary" id="wzNext">التالي</button></div></div>
+</section>
+<section class="view" id="v-cccall" hidden>
+  <div class="cc-sim">
+    <div class="phone-wrap"><div class="phone" id="phone"></div></div>
+    <div class="col cc-side">
+      <div class="card pad"><div class="row between"><h3 class="h3">النص المباشر</h3><div class="row gap" id="simChips"></div></div><div id="simLog" class="sim-log"><div class="empty">اتصل على الشركة من الهاتف، وتكلّم بلهجتك. تقدر تقاطع الموظف وهو يتكلم.</div></div></div>
+      <div class="grid-2 tight"><div class="card pad"><h3 class="h3">الإجراءات</h3><div id="simActs" class="col sm-gap"><div class="empty sm">ما فيه إجراءات بعد.</div></div></div>
+      <div class="card pad"><h3 class="h3">إشعارات العميل</h3><div id="simNotes" class="wa"><div class="empty sm">رسائل الواتساب/SMS تظهر هنا.</div></div></div></div>
+    </div>
+  </div>
+</section>
+<section class="view" id="v-ccout" hidden>
+  <div class="page-head"><h1>الحملات الصادرة</h1><p>تذكير بالمواعيد، متابعة الدفعات، واستبيانات الرضا. جرّب الحملة بمحاكاة ذكية، أو خلي الموظف يتصل فيك أنت.</p></div>
+  <div class="grid-2">
+    <div class="card pad col">
+      <label class="field wide"><span>نوع الحملة</span><select id="coType"><option value="reminder">تذكير بموعد</option><option value="payment">متابعة دفعة مستحقة</option><option value="survey">استبيان رضا</option></select></label>
+      <label class="field wide"><span>النص الإرشادي للموظف</span><textarea id="coScript" class="kbta" dir="auto" style="min-height:120px"></textarea></label>
+      <label class="field wide"><span>جهات الاتصال (الاسم، الرقم، التفاصيل) سطر لكل عميل</span><textarea id="coContacts" class="kbta ltr-num" dir="auto" style="min-height:120px"></textarea></label>
+      <div class="row gap wrap"><button class="btn primary" id="coRun"><span class="btxt">محاكاة الحملة</span><span class="spin"></span></button><button class="btn soft" id="coSample">مثال جاهز</button><button class="btn soft" id="coCsv">تصدير النتائج CSV</button></div>
+      <p class="muted small">المحاكاة: الذكاء الاصطناعي يمثّل دور العملاء لاختبار النص، وما يتم أي اتصال حقيقي. «اتصل فيني» يخليك أنت العميل في محاكي الهاتف.</p>
+    </div>
+    <div class="col"><div class="stats" id="coStats"></div><div class="card pad"><h3 class="h3">النتائج</h3><div id="coRes" class="col sm-gap"><div class="empty">شغّل الحملة وبتظهر النتائج هنا.</div></div></div></div>
+  </div>
+</section>
+
 </main>
 
 <nav class="tabbar" id="tabbar"></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script type="module" src="app.js?v=5"></script>
+<script type="module" src="app.js?v=7"></script>
+<script type="module" src="cc.js?v=2"></script>
+<script type="module" src="scenarios.js?v=1"></script>
+<script type="module" src="home.js?v=1"></script>
+<script type="module" src="studio.js?v=1"></script>
 </body>
 </html>
