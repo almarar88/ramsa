@@ -147,3 +147,22 @@ a.card:hover,.feature:hover,.hubcard:hover,.vcard:hover{transform:translateY(-3p
 @keyframes hlPulse{0%{opacity:0;transform:scale(.7)}30%{opacity:.95}100%{opacity:0;transform:scale(1.15)}}
 @keyframes hlDot{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}}
 @media (prefers-reduced-motion:reduce){.hero-logo *{animation:none!important}.hero-logo .hl-r2{opacity:.5}}
+
+/* speed section */
+.speed{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;margin:90px auto;max-width:1100px;padding:44px;border-radius:28px;background:linear-gradient(135deg,#0b2f2c,#0d5c57);color:#eaf6f4;overflow:hidden;position:relative}
+.speed h2{font-size:clamp(1.8rem,3.4vw,2.6rem);margin:.3em 0;color:#fff}.speed p{color:#cfe7e3;line-height:1.9}.speed .kicker{color:#f2c46d}
+.speed .muted{color:#9fc7c1!important}
+.sp-row{display:grid;grid-template-columns:52px 1fr 90px;align-items:center;gap:12px;margin:14px 0;font-weight:600}
+.sp-bar{height:14px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.sp-bar i{display:block;height:100%;width:0;border-radius:99px;transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
+.sp-old{background:linear-gradient(90deg,#b45309,#f59e0b)}.sp-new{background:linear-gradient(90deg,#34d399,#f2c46d);transition-duration:.5s!important}
+.speed.in .sp-bar i{width:var(--w)}
+.sp-wave{display:flex;gap:4px;align-items:center;height:46px;margin-top:18px}
+.sp-wave i{flex:1;background:#f2c46d;border-radius:4px;height:20%;opacity:.75;animation:spw 1.2s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes spw{0%,100%{height:15%}50%{height:90%}}
+@media (max-width:760px){.speed{grid-template-columns:1fr;padding:28px;margin:60px 14px;gap:20px}}
+@media (prefers-reduced-motion:reduce){.sp-wave i{animation:none}.sp-bar i{transition:none}}
+/* interactive cards: spotlight + tilt */
+.spot{position:relative;transform-style:preserve-3d;transition:transform .25s ease}
+.spot::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(20,133,124,.13),transparent 60%);opacity:0;transition:opacity .25s}
+.spot:hover::after{opacity:1}

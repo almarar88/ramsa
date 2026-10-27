@@ -111,7 +111,8 @@ const DIALECTS = [["ae", "إماراتي"], ["sa", "سعودي نجدي"], ["hj"
 const DGROUP = {"ae": "gulf", "sa": "gulf", "hj": "gulf", "kw": "gulf", "qa": "gulf", "bh": "gulf", "om": "gulf", "iq": "iq", "sy": "lev", "lb": "lev", "jo": "lev", "ps": "lev", "eg": "nile", "sd": "nile", "ma": "mag", "dz": "mag", "tn": "mag", "ly": "mag", "ye": "iq", "msa": "std", "en": "std"};
 const REGIONS = [["gulf", "الخليج"], ["iq", "العراق واليمن"], ["lev", "الشام"], ["nile", "مصر والسودان"], ["mag", "المغرب العربي"], ["std", "فصحى وEnglish"]];
 // Verified by generating each dialect and running Nabra's own dialect detector on it (see README): "weak" = sounds close but not reliably native.
-const DQUAL = {};
+// Results (Oct 2026): detector heard the intended dialect for ae, sa, kw, iq, sy, lb, jo, eg, sd, ma, ye, msa, en. hj→najdi, qa→kuwaiti, bh→kuwaiti, om→emirati, ps→jordanian, tn/ly→MSA; dz untested (quota).
+const DQUAL = { hj: "weak", qa: "weak", bh: "weak", om: "weak", ps: "weak", tn: "weak", ly: "weak", dz: "weak" };
 const DNAME = Object.fromEntries(DIALECTS);
 const dialectSelect = (sel, val) => { sel.replaceChildren(...REGIONS.map(([g, gl]) => h("optgroup", { label: gl }, ...DIALECTS.filter(([k]) => DGROUP[k] === g).map(([k, l]) => h("option", { value: k }, l + (DQUAL[k] === "weak" ? " (تجريبي)" : "")))))); if (val) sel.value = val; return sel; };
 const VOICES = [
@@ -604,7 +605,15 @@ $("#pdScript").onclick = async (ev) => { const b = ev.currentTarget, topic = $("
   try { const r = await api("podcast_script", { topic, dialect: $("#pdDialect").value, turns: +$("#pdTurns").value, a: vName($("#pdA").value), b: vName($("#pdB").value) }); const na = vName($("#pdA").value), nb = vName($("#pdB").value); pd.lines = (r.lines || []).filter((l) => l.text).slice(0, 16).map((l, i) => { const sp = String(l.speaker || "").trim(); return { text: l.text, speaker: /^(a|1|speaker ?1)$/i.test(sp) || sp === na ? "A" : /^(b|2|speaker ?2)$/i.test(sp) || sp === nb ? "B" : i % 2 ? "B" : "A" }; }); $("#pdTitle").textContent = r.title || "الحوار"; $("#pdOut").replaceChildren(); renderPd(); }
   catch (e) { toast(errMsg(e.code), true); } finally { b.classList.remove("loading"); } };
 $("#pdAudio").onclick = async (ev) => { const b = ev.currentTarget; b.classList.add("loading"); $(".btxt", b).textContent = "نسجّل الحلقة…";
-  try { const va = VOICES.find((v) => v.id === $("#pdA").value).v, vb = VOICES.find((v) => v.id === $("#pdB").value).v; const r = await api("podcast_audio", { lines: pd.lines, dialect: $("#pdDialect").value, va, vb }, 150000);
+  try { const va = VOICES.find((v) => v.id === $("#pdA").value).v, vb = VOICES.find((v) => v.id === $("#pdB").value).v; let r; try { r = await api("podcast_audio", { lines: pd.lines, dialect: $("#pdDialect").value, va, vb }, 150000); }
+    catch (e) { if (!["rate_limit", "busy", "timeout", "empty", "http_546"].includes(e.code) && !(e.status >= 500)) throw e;
+      // fallback: line by line with each host's voice, stitched locally (slower, simpler delivery)
+      const parts = []; let rate = 24000;
+      for (let i = 0; i < pd.lines.length; i++) { $(".btxt", b).textContent = `نسجّل سطر ${i + 1}/${pd.lines.length}…`; const l = pd.lines[i], text = l.text.replace(/\[[^\]]*\]/g, "").trim(); if (!text) continue;
+        const x = await api("tts", { text, voice: l.speaker === "B" ? vb : va, dialect: $("#pdDialect").value, style: "warm", pace: "natural", emotion: "" });
+        const m = /rate=(\d+)/.exec(x.mime || ""); if (!/L16|pcm/i.test(x.mime || "")) throw e; if (m) rate = +m[1]; parts.push(b64ToBytes(x.audio), new Uint8Array(Math.round(rate * 0.6))); }
+      const n = parts.reduce((s, p) => s + p.length, 0), out = new Uint8Array(n); let o = 0; for (const p of parts) { out.set(p, o); o += p.length; }
+      r = { audio: bytesToB64(out), mime: `audio/L16;codec=pcm;rate=${rate}` }; toast("الصوت المزدوج مزدحم؛ سجّلنا الحلقة سطر بسطر."); }
     $("#pdOut").replaceChildren(makePlayer({ title: `🎙️ ${$("#pdTitle").textContent}`, wav: audioToWav(r.audio, r.mime), filename: `nabra-podcast-${Date.now()}.wav`, autoplay: true })); }
   catch (e) { toast(errMsg(e.code), true); } finally { b.classList.remove("loading"); $(".btxt", b).textContent = "حوّله لصوت"; } };
 

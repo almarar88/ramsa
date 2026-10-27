@@ -70,7 +70,41 @@ export function quranGuard(t: string) { const plain = t.replace(/[\u064B-\u0652\
 async function tts(text: string, voice: string, dialect: string, style: string, pace: string, emotion = "") {
   quranGuard(text);
   const prompt = `# DIRECTOR'S NOTES\nAccent: ${DIALECTS[dialect] ?? DIALECTS.ae}.\nTone: ${STYLES[style] ?? STYLES.warm}${EMO[emotion] ? ", " + EMO[emotion] : ""}.\nPace: ${PACE[pace] ?? "natural"}.\nPerform any bracketed audio tags (e.g. [chuckle], [laughs], [sigh], [whispers], [clears throat]) as sounds or delivery cues; never read the tags aloud. Read the transcript exactly as written.\n\n# TRANSCRIPT\n${text}`;
-  return ttsRaw(prompt, { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } });
+  try { return await ttsRaw(prompt, { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } }); }
+  catch (e) {
+    // TTS quota exhausted/busy: fall back to the Gemini Live audio model (separate quota). Same PCM format as the TTS API.
+    if (!(e instanceof Fail) || !["rate_limit", "busy", "timeout", "empty"].includes(e.code)) throw e;
+    try { return await liveSayChecked(text, voice, `Accent: ${DIALECTS[dialect] ?? DIALECTS.ae}. Tone: ${STYLES[style] ?? STYLES.warm}${EMO[emotion] ? ", " + EMO[emotion] : ""}. Pace: ${PACE[pace] ?? "natural"}.`); } catch { throw e; }
+  }
+}
+// Live sometimes says one word then pads with silence: trim silence, and retry if the speech is clearly too short for the text.
+async function liveSayChecked(text: string, voice: string, notes: string) {
+  let best: any = null, bestV = -1;
+  for (let i = 0; i < 3; i++) {
+    const r = await liveSay(text, voice, notes); const by = Uint8Array.from(atob(r.audio), (c) => c.charCodeAt(0)); const v = new DataView(by.buffer); const n = by.length >> 1, win = 2400;
+    let voiced = 0, last = 0; for (let k = 0; k < n; k += win) { let m = 0; for (let j = k; j < Math.min(n, k + win); j++) m = Math.max(m, Math.abs(v.getInt16(j * 2, true))); if (m > 1500) { voiced++; last = k + win; } }
+    const end = Math.min(n, last + 9600); let bin = ""; const cut = by.subarray(0, end * 2); for (let k = 0; k < cut.length; k += 0x8000) bin += String.fromCharCode(...cut.subarray(k, k + 0x8000));
+    const out = { ...r, audio: btoa(bin) }; const vs = voiced * 0.1;
+    if (vs > bestV) { best = out; bestV = vs; }
+    if (vs >= Math.min(text.length * 0.035, 20)) return out;
+  }
+  return best;
+}
+function liveSay(text: string, voice: string, notes: string): Promise<{ audio: string; mime: string; model: string }> {
+  return new Promise((res, rej) => {
+    const ws = new WebSocket("wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=" + KEY);
+    const bufs: Uint8Array[] = []; const to = setTimeout(() => { try { ws.close(); } catch {} rej(new Error("live_timeout")); }, 60000);
+    ws.onopen = () => ws.send(JSON.stringify({ setup: { model: "models/gemini-3.1-flash-live-preview", generationConfig: { responseModalities: ["AUDIO"], temperature: 0.2, speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } },
+      systemInstruction: { parts: [{ text: "You are a voice actor reading a script aloud. Read the user's text EXACTLY word for word, in order, without adding, skipping, answering, or commenting. Do not read bracketed stage directions aloud; perform them. " + notes } ] } } }));
+    ws.onmessage = async (ev) => { const m = JSON.parse(typeof ev.data === "string" ? ev.data : await (ev.data as Blob).text());
+      if (m.setupComplete) ws.send(JSON.stringify({ clientContent: { turns: [{ role: "user", parts: [{ text: "النص:\n" + text }] }], turnComplete: true } }));
+      for (const p of m.serverContent?.modelTurn?.parts ?? []) if (p.inlineData?.data) bufs.push(Uint8Array.from(atob(p.inlineData.data), (c) => c.charCodeAt(0)));
+      if (m.serverContent?.turnComplete) { clearTimeout(to); ws.close(); if (!bufs.length) return rej(new Error("empty"));
+        const n = bufs.reduce((a, b) => a + b.length, 0), all = new Uint8Array(n); let o = 0; for (const b of bufs) { all.set(b, o); o += b.length; }
+        let bin = ""; for (let i = 0; i < all.length; i += 0x8000) bin += String.fromCharCode(...all.subarray(i, i + 0x8000));
+        res({ audio: btoa(bin), mime: "audio/L16;codec=pcm;rate=24000", model: "live-fallback" }); } };
+    ws.onerror = () => { clearTimeout(to); rej(new Error("ws")); };
+  });
 }
 
 async function gem(sys: string, parts: any[], timeout = 30000, models = TEXT_MODELS) {
@@ -226,7 +260,11 @@ Distinguish speakers by voice; label them المتحدث 1، المتحدث 2…
       const body = lines.map((l: any) => `${l.speaker === "B" ? "Speaker2" : "Speaker1"}: ${String(l.text ?? "").slice(0, 400)}`).join("\n"); quranGuard(body);
       if (body.length > 4000) throw new Fail("too_long", 400);
       const prompt = `# DIRECTOR'S NOTES\nA relaxed, lively two-host podcast. Accent: ${DIALECTS[String(b.dialect)] ?? DIALECTS.ae}. Perform bracketed audio tags as sounds, never read them aloud.\n\n# TRANSCRIPT\n${body}`;
-      return json(await ttsRaw(prompt, { multiSpeakerVoiceConfig: { speakerVoiceConfigs: [{ speaker: "Speaker1", voiceConfig: { prebuiltVoiceConfig: { voiceName: A } } }, { speaker: "Speaker2", voiceConfig: { prebuiltVoiceConfig: { voiceName: B } } }] } }));
+      try { return json(await ttsRaw(prompt, { multiSpeakerVoiceConfig: { speakerVoiceConfigs: [{ speaker: "Speaker1", voiceConfig: { prebuiltVoiceConfig: { voiceName: A } } }, { speaker: "Speaker2", voiceConfig: { prebuiltVoiceConfig: { voiceName: B } } }] } })); }
+      catch (e: any) {
+        if (!(e instanceof Fail) || !["rate_limit", "busy", "timeout", "empty"].includes(e.code)) throw e;
+        throw e; // client stitches per-line tts as fallback (server-side stitching exceeded edge limits)
+      }
     }
     if (mode === "voicenote") {
       const sys = `You help the user reply to a WhatsApp voice note. Understand the received message (audio or text, any Arabic dialect or English). Then write the user's reply as a short spoken voice note (1-4 sentences) in ${DIALECTS[String(b.dialect)] ?? "the same dialect as the sender"}, with tone: ${String(b.tone ?? "friendly").slice(0, 60)}. ${b.intent ? "The user wants to say: " + String(b.intent).slice(0, 300) + "." : "Choose a polite, sensible reply."} Do not invent commitments beyond what the user asked. Return JSON {"heard":"verbatim transcript of the received message","heard_dialect":"...","gist":"one-line Arabic summary of what they want","reply":"the reply text to be spoken"}`;
@@ -261,7 +299,7 @@ async function cc(mode: string, b: any): Promise<any> {
     const sys = (cut > 0 ? full.slice(0, cut) : full).replace(/## الإجراءات \(أنظمة حقيقية متصلة\)[\s\S]*?(?=رقم هاتف المتصل)/, "") + `
 ## مكالمة صوتية مباشرة
 أنت تتكلم بالصوت مباشرة في مكالمة هاتفية مستمرة. ردود قصيرة جدًا (جملة أو جملتين)، طبيعية، بدون قوائم. إذا قاطعك المتصل توقف وتجاوب مع كلامه الجديد.
-استخدم الأدوات (functions) لتنفيذ الإجراءات: create_booking, order_status, create_ticket, request_callback, transfer, end_call. قبل أداة تحتاج وقت قل كلمة قصيرة مثل «لحظة أشيك لك». بعد نتيجة الأداة أخبر المتصل بالنتيجة ورقم المرجع (ref) بنطق الأرقام رقمًا رقمًا. لا تقرأ JSON أبدًا. لا تنفذ حجزًا أو تذكرة إلا بعد تأكيد المتصل.
+استخدم الأدوات (functions) لتنفيذ الإجراءات: create_booking, order_status, create_ticket, request_callback, transfer, end_call. قبل أداة تحتاج وقت قل كلمة قصيرة مثل «لحظة أشيك لك». ممنوع منعًا باتًا أن تقول «تم» أو تذكر أي رقم مرجع قبل أن تستدعي الأداة وتصلك نتيجتها؛ رقم المرجع يأتي فقط من نتيجة الأداة (ref). عند موافقة المتصل: قل «لحظة» فقط ثم استدعِ الأداة فورًا. قبل التحويل للدعم الفني بعد فشل الخطوات افتح create_ticket (technical) أولًا. بعد نتيجة الأداة أخبر المتصل بالنتيجة ورقم المرجع (ref) بنطق الأرقام رقمًا رقمًا. لا تقرأ JSON أبدًا. لا تنفذ حجزًا أو تذكرة إلا بعد تأكيد المتصل. العمليات الحساسة (إيقاف بطاقة، دفع، إلغاء، رسوم): لخّصها واسأل «تأكد؟» ثم انتظر رد المتصل بالموافقة في دور مستقل قبل استدعاء الأداة؛ طلبه الأول ليس تأكيدًا. في الدعم الفني: خطوة استكشاف واحدة في كل رد بالترتيب، واسأل هل انحلت، ولا تفتح تذكرة فنية قبل استنفاد الخطوات.
 إذا وصلتك رسالة نصية تبدأ بـ [نظام] فهي حدث من النظام (مثل ضغط رقم من لوحة المفاتيح أو بداية المكالمة) وليست كلام المتصل.
 عند الوداع النهائي قل جملة الختام ثم استدعِ end_call. إذا طلب المتصل موظفًا بشريًا أو حسب قواعد التصعيد: قل جملة واحدة قصيرة («أبشر، بحولك الحين لموظف») ثم استدعِ transfer فورًا في نفس الرد، بدون أسئلة إضافية وبدون عروض. لا تكرر نفس الجملة مرتين. لا تنطق أبدًا أسماء الأدوات أو كلمات إنجليزية تقنية مثل end_call أو call_end. إذا كان كلام المتصل غير واضح أو بلغة غريبة اطلب منه يعيد بلطف.`;
     const str = (d = "") => ({ type: "STRING", description: d });

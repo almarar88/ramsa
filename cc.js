@@ -478,7 +478,7 @@ function flushUser() {
   live.uText = ""; live.uF = []; live.speakingUser = false;
 }
 function flushAgent(interrupted) {
-  const t = live.aText.trim();
+  let t = live.aText.trim(); const EC = /(استدعاء\s*)?\b(end[_ ]?call|call[_ ]?end)\b\.?/gi; if (EC.test(t)) { t = t.replace(EC, "").trim(); live.endReq = true; }
   if (t) { const l = addLine({ role: "agent", text: t, ms: live.turnMs, barged: interrupted || live.bargedTurn }); if (live.turnMs) l.ms = live.turnMs; }
   if (live.aF.length) sim.rec.push({ who: "agent", f32: lin(concat(live.aF), 24000, 16000) });
   // safety net: the model sometimes announces a transfer without calling the tool
@@ -496,7 +496,7 @@ async function liveMsg(e) {
       if (!live.firstOut) { live.firstOut = true; if (live.uText.trim() && live.lastVoice) { const ms = Math.round(performance.now() - live.lastVoice); live.turnMs = ms; sim.lat.push(ms); } flushUser(); setPhase("speaking"); }
       liveQueue(p.inlineData.data);
     }
-    if (sc.outputTranscription?.text) { if (!live.firstOut) flushUser(); live.aText += sc.outputTranscription.text; caption({ role: "agent", text: live.aText }); }
+    if (sc.outputTranscription?.text) { if (!live.firstOut) flushUser(); live.aText += sc.outputTranscription.text; caption({ role: "agent", text: live.aText.replace(/(استدعاء\s*)?\b(end[_ ]?call|call[_ ]?end)\b\.?/gi, "") }); }
     if (sc.turnComplete) { if (!live.firstOut) flushUser(); flushAgent(false); setChips(); liveAfterPlayback(); }
   }
   if (m.toolCall) for (const fc of m.toolCall.functionCalls || []) liveTool(fc);

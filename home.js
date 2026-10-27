@@ -78,3 +78,18 @@ if (dmap) {
   dmap.replaceChildren(...REGIONS.map(([g, gl]) => h("div", { class: "dregion r-" + g }, h("b", {}, gl), h("div", { class: "dchips" }, ...DIALECTS.filter(([k]) => DGROUP[k] === g).map(([k]) => btn(k))))),
     h("p", { class: "muted small dnote" }, "«تجريبي» = اختبرناها ولقينا النطق قريب لكن مو دائمًا أصلي. اللهجات الخليجية والمصرية والشامية والفصحى الأقوى."));
 }
+
+// interactive: pointer spotlight + gentle tilt on cards, latency bars animate on view
+(() => {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches, fine = matchMedia("(pointer: fine)").matches;
+  const bind = () => {
+    document.querySelectorAll("#v-home .card, #v-home .prod, #v-home .bento > *, #v-home .ind, #v-home .vcard").forEach((el) => {
+      if (el.dataset.spot) return; el.dataset.spot = 1; el.classList.add("spot"); if (!fine) return;
+      el.addEventListener("pointermove", (e) => { const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        el.style.setProperty("--mx", x * 100 + "%"); el.style.setProperty("--my", y * 100 + "%"); if (!reduce && r.width < 700) el.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 4}deg) rotateY(${(x - 0.5) * 4}deg)`; });
+      el.addEventListener("pointerleave", () => { el.style.transform = ""; });
+    });
+    const sp = document.querySelector("#speed"); if (sp && !sp.dataset.io) { sp.dataset.io = 1; new IntersectionObserver((es, o) => es.forEach((x) => { if (x.isIntersecting) { sp.classList.add("in"); o.disconnect(); } }), { threshold: 0.35 }).observe(sp); }
+  };
+  bind(); addEventListener("hashchange", () => setTimeout(bind, 50));
+})();

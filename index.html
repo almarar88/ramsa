@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=4">
 <link rel="stylesheet" href="cc.css?v=1">
-<link rel="stylesheet" href="design.css?v=2">
+<link rel="stylesheet" href="design.css?v=3">
 </head>
 <body>
 <header class="topbar">
@@ -54,6 +54,17 @@
   <div class="stat-band reveal" aria-label="أرقام المنصة">
     <div><b data-count="30">30</b><span>صوت جاهز</span></div><div><b data-count="21">21</b><span>لهجة ولغة</span></div><div><b data-count="15">15</b><span>أداة صوتية</span></div><div><b>0</b><span>تسجيل دخول مطلوب</span></div>
   </div>
+
+  <section class="speed reveal" id="speed" aria-label="سرعة الرد">
+    <div class="speed-copy"><span class="kicker">مكالمة مباشرة</span><h2>يرد قبل ما تخلص نفَسك.</h2><p>محرك المكالمات الجديد يبث الصوت في الاتجاهين معًا: المايك مفتوح طول المكالمة، تقاطعه متى ما تبي، والرد يبدأ خلال ثانية ونص تقريبًا.</p>
+      <a class="btn primary" href="#ccdemo">جرّب مكالمة الحين</a></div>
+    <div class="speed-viz">
+      <div class="sp-row"><span>قبل</span><div class="sp-bar"><i class="sp-old" style="--w:100%"></i></div><b>١٤ إلى ٣٠ ث</b></div>
+      <div class="sp-row"><span>الحين</span><div class="sp-bar"><i class="sp-new" style="--w:7%"></i></div><b>~١٫٥ ث</b></div>
+      <p class="muted small">قياس فعلي من نهاية كلام المتصل إلى أول صوت للرد، على مكالمات اختبار (أكتوبر 2026). الردود اللي تنفذ إجراء (حجز/تذكرة) تاخذ ٣–٤ ث.</p>
+      <div class="sp-wave" aria-hidden="true"><i style="--d:0.00s"></i><i style="--d:0.07s"></i><i style="--d:0.14s"></i><i style="--d:0.21s"></i><i style="--d:0.28s"></i><i style="--d:0.35s"></i><i style="--d:0.42s"></i><i style="--d:0.49s"></i><i style="--d:0.56s"></i><i style="--d:0.63s"></i><i style="--d:0.70s"></i><i style="--d:0.77s"></i><i style="--d:0.84s"></i><i style="--d:0.91s"></i><i style="--d:0.98s"></i><i style="--d:1.05s"></i><i style="--d:1.12s"></i><i style="--d:1.19s"></i><i style="--d:1.26s"></i><i style="--d:1.33s"></i><i style="--d:1.40s"></i><i style="--d:1.47s"></i><i style="--d:1.54s"></i><i style="--d:1.61s"></i><i style="--d:1.68s"></i><i style="--d:1.75s"></i><i style="--d:1.82s"></i><i style="--d:1.89s"></i></div>
+    </div>
+  </section>
 
   <div class="section-title reveal"><span class="kicker">المنتجات</span><h2>منصة كاملة للصوت العربي.</h2><p>من مكالمة عميل واحدة إلى كتاب صوتي كامل.</p></div>
   <div class="products">
@@ -387,10 +398,10 @@
 
 <nav class="tabbar" id="tabbar"></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script type="module" src="app.js?v=8"></script>
-<script type="module" src="cc.js?v=3"></script>
+<script type="module" src="app.js?v=9"></script>
+<script type="module" src="cc.js?v=4"></script>
 <script type="module" src="scenarios.js?v=1"></script>
-<script type="module" src="home.js?v=1"></script>
+<script type="module" src="home.js?v=2"></script>
 <script type="module" src="studio.js?v=2"></script>
 </body>
 </html>
