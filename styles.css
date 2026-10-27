@@ -177,6 +177,7 @@ input[type=range]{accent-color:var(--acc);width:100%}
 .msg .en{font-size:13px;color:var(--muted);direction:ltr;text-align:left;margin:4px 6px 0}
 .msg .meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 4px 0}
 .msg .meta span{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--acc-soft);color:var(--ink2);direction:ltr;font-family:ui-monospace,Menlo,monospace}
+.msg .meta span.ar{font-family:var(--font);direction:rtl;font-size:12px}
 .msg .meta span.act{background:var(--gold-soft);color:color-mix(in srgb,var(--gold) 75%,var(--ink))}
 .msg.sys{align-self:center;max-width:95%}.msg.sys .bub{background:#d6453d12;color:var(--red);font-size:14px;padding:8px 14px;text-align:center}
 .msg.sys.ok .bub{background:var(--acc-soft);color:var(--ink2)}
@@ -220,6 +221,8 @@ input[type=range]{accent-color:var(--acc);width:100%}
   textarea{font-size:16px}
   .transcript-live{max-height:none}
   .msg{max-width:92%}
-  .seg button{padding:7px 12px;font-size:13.5px}
+  .seg{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%}.seg::-webkit-scrollbar{display:none}
+  .seg button{padding:7px 12px;font-size:13.5px;flex:none}
+  .orb{width:120px;height:120px}.orb .core{width:96px;height:96px}.orb-zone{padding:14px 0 8px}.agent-status{font-size:18px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

@@ -371,8 +371,8 @@ async function agentTurn(payload) {
   catch (e) { ty.remove(); addMsg("sys", errMsg(e.code)); setPhase(call.on ? "listening" : "idle"); return; }
   ty.remove();
   const heard = (r.heard || payload.text || "").trim();
-  if (payload.audio) { if (heard) addMsg("user", heard, r.heard_en, [r.dialect && h("span", {}, (DIALECT_AR[r.dialect] || r.dialect).toUpperCase()), r.intent && h("span", {}, "INTENT: " + r.intent), r.confidence != null && h("span", {}, "CONF " + Number(r.confidence).toFixed(2))].filter(Boolean)); }
-  else { const um = [...log.querySelectorAll(".msg.user")].pop(); if (um && !um.querySelector(".meta")) { if (r.heard_en) um.append(h("div", { class: "en" }, r.heard_en)); um.append(h("div", { class: "meta" }, [r.dialect && h("span", {}, (DIALECT_AR[r.dialect] || r.dialect).toUpperCase()), r.intent && h("span", {}, "INTENT: " + r.intent), r.confidence != null && h("span", {}, "CONF " + Number(r.confidence).toFixed(2))].filter(Boolean))); } }
+  if (payload.audio) { if (heard) addMsg("user", heard, r.heard_en, [r.dialect && h("span", { class: "ar" }, DIALECT_AR[r.dialect] || r.dialect), r.intent && h("span", {}, "INTENT: " + r.intent), r.confidence != null && h("span", {}, "CONF " + Number(r.confidence).toFixed(2))].filter(Boolean)); }
+  else { const um = [...log.querySelectorAll(".msg.user")].pop(); if (um && !um.querySelector(".meta")) { if (r.heard_en) um.append(h("div", { class: "en" }, r.heard_en)); um.append(h("div", { class: "meta" }, [r.dialect && h("span", { class: "ar" }, DIALECT_AR[r.dialect] || r.dialect), r.intent && h("span", {}, "INTENT: " + r.intent), r.confidence != null && h("span", {}, "CONF " + Number(r.confidence).toFixed(2))].filter(Boolean))); } }
   if (heard) call.hist.push({ role: "user", text: heard });
   $("#agDialect").textContent = DIALECT_AR[r.dialect] || "—"; $("#agIntent").textContent = r.intent || "—"; $("#agConf").textContent = r.confidence != null ? Math.round(r.confidence * 100) + "٪" : "—";
   if (r.intent && !["SMALL_TALK", "UNKNOWN"].includes(r.intent)) call.intents.push(r.intent);
