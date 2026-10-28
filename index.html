@@ -20,9 +20,10 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=4">
 <link rel="stylesheet" href="cc.css?v=1">
-<link rel="stylesheet" href="design.css?v=3">
+<link rel="stylesheet" href="design.css?v=4">
 </head>
 <body>
+<div class="scroll-prog" aria-hidden="true"></div>
 <header class="topbar">
   <a class="brand" href="#home" aria-label="نبرة"><picture><source srcset="icons/logo-dark.svg" media="(prefers-color-scheme: dark)"><img src="icons/logo.svg" alt=""></picture><span>نَبرة</span></a>
   <nav class="topnav" id="topnav"></nav>
@@ -63,6 +64,22 @@
       <div class="sp-row"><span>الحين</span><div class="sp-bar"><i class="sp-new" style="--w:7%"></i></div><b>~١٫٥ ث</b></div>
       <p class="muted small">قياس فعلي من نهاية كلام المتصل إلى أول صوت للرد، على مكالمات اختبار (أكتوبر 2026). الردود اللي تنفذ إجراء (حجز/تذكرة) تاخذ ٣–٤ ث.</p>
       <div class="sp-wave" aria-hidden="true"><i style="--d:0.00s"></i><i style="--d:0.07s"></i><i style="--d:0.14s"></i><i style="--d:0.21s"></i><i style="--d:0.28s"></i><i style="--d:0.35s"></i><i style="--d:0.42s"></i><i style="--d:0.49s"></i><i style="--d:0.56s"></i><i style="--d:0.63s"></i><i style="--d:0.70s"></i><i style="--d:0.77s"></i><i style="--d:0.84s"></i><i style="--d:0.91s"></i><i style="--d:0.98s"></i><i style="--d:1.05s"></i><i style="--d:1.12s"></i><i style="--d:1.19s"></i><i style="--d:1.26s"></i><i style="--d:1.33s"></i><i style="--d:1.40s"></i><i style="--d:1.47s"></i><i style="--d:1.54s"></i><i style="--d:1.61s"></i><i style="--d:1.68s"></i><i style="--d:1.75s"></i><i style="--d:1.82s"></i><i style="--d:1.89s"></i></div>
+    </div>
+  </section>
+
+  <section class="how" id="how" aria-label="كيف تشتغل المكالمة">
+    <div class="section-title reveal"><span class="kicker">كيف تشتغل</span><h2>من «ألو» إلى إجراء منفّذ.</h2><p>ثلاث خطوات تصير في كل مكالمة، بدون أزرار وبدون انتظار.</p></div>
+    <div class="how-grid">
+      <div class="how-stage" aria-hidden="true"><div class="how-card">
+        <div class="hs" data-s="0"><div class="hs-ic">🎙️</div><b>يسمعك وأنت تتكلم</b><div class="hs-wave"><i style="--d:0.00s"></i><i style="--d:0.06s"></i><i style="--d:0.12s"></i><i style="--d:0.18s"></i><i style="--d:0.24s"></i><i style="--d:0.30s"></i><i style="--d:0.36s"></i><i style="--d:0.42s"></i><i style="--d:0.48s"></i><i style="--d:0.54s"></i><i style="--d:0.60s"></i><i style="--d:0.66s"></i><i style="--d:0.72s"></i><i style="--d:0.78s"></i><i style="--d:0.84s"></i><i style="--d:0.90s"></i><i style="--d:0.96s"></i><i style="--d:1.02s"></i><i style="--d:1.08s"></i><i style="--d:1.14s"></i><i style="--d:1.20s"></i><i style="--d:1.26s"></i></div><small>المايك مفتوح طول المكالمة، وتقدر تقاطعه متى ما تبي.</small></div>
+        <div class="hs" data-s="1"><div class="hs-ic">🧠</div><b>يفهم اللهجة والطلب</b><div class="hs-bubble">«بطاقتي ضاعت، أبي أوقفها»</div><div class="hs-bubble me">«أكيد. توقيف البطاقة نهائي، تأكد؟»</div><small>العمليات الحساسة ما تتنفذ إلا بعد تأكيد صريح.</small></div>
+        <div class="hs" data-s="2"><div class="hs-ic">✅</div><b>ينفّذ ويعطيك رقم مرجعي</b><div class="hs-ticket"><span>تذكرة</span><code>TK-••••••</code></div><small>الرقم المرجعي يجي من نتيجة الإجراء فقط، مو من خيال النموذج. (تجربة، ليست جهة حقيقية)</small></div>
+      </div></div>
+      <div class="how-steps">
+        <article class="step" data-s="0"><span>٠١</span><h3>اتصال متواصل بالاتجاهين</h3><p>الصوت يتبث مباشرة وأنت تتكلم، والرد يبدأ عادة خلال ثانية ونص تقريبًا في اختباراتنا.</p></article>
+        <article class="step" data-s="1"><span>٠٢</span><h3>فهم باللهجة، وتأكيد قبل أي إجراء حساس</h3><p>إيقاف بطاقة أو دفع أو إلغاء؟ الوكيل يسألك أول، وما ينفّذ إلا لما تأكد في رد منفصل.</p></article>
+        <article class="step" data-s="2"><span>٠٣</span><h3>إجراء حقيقي داخل النظام</h3><p>حجز، تذكرة، طلب اتصال، أو تحويل لموظف. كل شيء ينحفظ في لوحة المكالمات مع التسجيل والملخص.</p></article>
+      </div>
     </div>
   </section>
 
@@ -401,7 +418,7 @@
 <script type="module" src="app.js?v=10"></script>
 <script type="module" src="cc.js?v=4"></script>
 <script type="module" src="scenarios.js?v=1"></script>
-<script type="module" src="home.js?v=2"></script>
+<script type="module" src="home.js?v=3"></script>
 <script type="module" src="studio.js?v=2"></script>
 </body>
 </html>

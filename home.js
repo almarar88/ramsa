@@ -93,3 +93,14 @@ if (dmap) {
   };
   bind(); addEventListener("hashchange", () => setTimeout(bind, 50));
 })();
+
+// v4: progress bar, glass nav, sticky how-it-works
+(() => {
+  const tb = document.querySelector(".topbar"), pr = document.querySelector(".scroll-prog");
+  const onS = () => { const h = document.documentElement.scrollHeight - innerHeight; pr && pr.style.setProperty("--sp", h > 0 ? scrollY / h : 0); tb && tb.classList.toggle("scrolled", scrollY > 10); };
+  addEventListener("scroll", onS, { passive: true }); onS();
+  const set = (i) => { document.querySelectorAll("#how .hs").forEach((x) => x.classList.toggle("on", x.dataset.s === i)); document.querySelectorAll("#how .step").forEach((x) => x.classList.toggle("on", x.dataset.s === i)); };
+  set("0");
+  const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && set(e.target.dataset.s)), { rootMargin: matchMedia("(max-width:820px)").matches ? "-55% 0px -30% 0px" : "-45% 0px -45% 0px" });
+  document.querySelectorAll("#how .step").forEach((x) => io.observe(x));
+})();
