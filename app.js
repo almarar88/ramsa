@@ -611,7 +611,10 @@ $("#pdAudio").onclick = async (ev) => { const b = ev.currentTarget; b.classList.
       const parts = []; let rate = 24000;
       for (let i = 0; i < pd.lines.length; i++) { $(".btxt", b).textContent = `نسجّل سطر ${i + 1}/${pd.lines.length}…`; const l = pd.lines[i], text = l.text.replace(/\[[^\]]*\]/g, "").trim(); if (!text) continue;
         const x = await api("tts", { text, voice: l.speaker === "B" ? vb : va, dialect: $("#pdDialect").value, style: "warm", pace: "natural", emotion: "" });
-        const m = /rate=(\d+)/.exec(x.mime || ""); if (!/L16|pcm/i.test(x.mime || "")) throw e; if (m) rate = +m[1]; parts.push(b64ToBytes(x.audio), new Uint8Array(Math.round(rate * 0.6))); }
+        let u = b64ToBytes(x.audio); const m = /rate=(\d+)/.exec(x.mime || "");
+        if (u[0] === 82 && u[1] === 73 && u[2] === 70 && u[3] === 70) { const dv = new DataView(u.buffer); rate = dv.getUint32(24, true); let off = 12; while (off + 8 < u.length) { const id = String.fromCharCode(...u.subarray(off, off + 4)), sz = dv.getUint32(off + 4, true); if (id === "data") { u = u.subarray(off + 8, off + 8 + sz); break; } off += 8 + sz; } }
+        else if (/L16|pcm/i.test(x.mime || "")) { if (m) rate = +m[1]; } else throw e;
+        parts.push(u, new Uint8Array(Math.round(rate * 0.6))); }
       const n = parts.reduce((s, p) => s + p.length, 0), out = new Uint8Array(n); let o = 0; for (const p of parts) { out.set(p, o); o += p.length; }
       r = { audio: bytesToB64(out), mime: `audio/L16;codec=pcm;rate=${rate}` }; toast("الصوت المزدوج مزدحم؛ سجّلنا الحلقة سطر بسطر."); }
     $("#pdOut").replaceChildren(makePlayer({ title: `🎙️ ${$("#pdTitle").textContent}`, wav: audioToWav(r.audio, r.mime), filename: `nabra-podcast-${Date.now()}.wav`, autoplay: true })); }
